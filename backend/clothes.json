@@ -1,0 +1,16 @@
+[
+  {
+    "id": "shirt",
+    "name": "화이트 셔츠",
+    "image_path": "clothes/shirt.png",
+    "fit": "slim",
+    "color": "white"
+  },
+  {
+    "id": "cort1",
+    "name": "블랙 코트",
+    "image_path": "clothes/cort1.png",
+    "fit": "oversize",
+    "color": "black"
+  }
+]

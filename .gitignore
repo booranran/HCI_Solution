@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.db
+*.sqlite3
+
+# venv
+.venv/
+env/
+
+# uploads (사용자 이미지)
+backend/uploads/
+
+# AI keys or credentials
+backend/vertex-ai-key.json
+
+# System
+.DS_Store
+*.log
