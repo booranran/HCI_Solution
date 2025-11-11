@@ -4,13 +4,15 @@
     "name": "화이트 셔츠",
     "image_path": "clothes/shirt.png",
     "fit": "slim",
-    "color": "white"
+    "color": "white",
+    "category": "UPPER_BODY_GARMENT" 
   },
   {
     "id": "cort1",
     "name": "블랙 코트",
     "image_path": "clothes/cort1.png",
     "fit": "oversize",
-    "color": "black"
+    "color": "black",
+    "category": "UPPER_BODY_GARMENT" 
   }
 ]

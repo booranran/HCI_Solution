@@ -150,11 +150,10 @@ async def generate(file: UploadFile = File(...), cloth_id: str = Form(...)):
         "Content-Type": "application/json"
     }
 
-    # ⚙️ 7. VTO용 요청 포맷 (진짜진짜 최종 수정)
+    # ⚙️ 7. VTO용 요청 포맷 (카테고리 동적 적용)
     payload = {
         "instances": [
             {
-                # 👇 "personImage" 값도 "image" 키로 감싸기
                 "personImage": {
                     "image": {"bytesBase64Encoded": user_b64}
                 },
@@ -166,7 +165,8 @@ async def generate(file: UploadFile = File(...), cloth_id: str = Form(...)):
             }
         ],
         "parameters": {
-            "productType": "UPPER_BODY_GARMENT" # (일단 '상의'로 고정)
+            # 👇 clothes.json에서 읽어온 값으로 자동 설정
+            "productType": cloth["category"] 
         }
     }
     
@@ -192,10 +192,6 @@ async def generate(file: UploadFile = File(...), cloth_id: str = Form(...)):
 
     # ✅ 10. 응답 파싱
     result = res.json()
-
-    # ✅✅✅ [추가] API 응답 전체를 터미널에 찍어보자 ✅✅✅
-    print(f"--- 9.1. Vertex AI 전체 응답: {result} ---")
-
     predictions = result.get("predictions", [])
     
    # 👇 "bytesBase64Encoded"로 수정
