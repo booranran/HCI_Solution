@@ -63,7 +63,7 @@ def list_clothes():
 
 PROJECT_ID = "teak-amphora-477208-r0"
 LOCATION = "us-central1"  # Imagen 모델은 보통 이 리전에 존재
-MODEL_ID = "imagen-4.0-generate-001"
+MODEL_ID = "virtual-try-on-preview-08-04"
 
 API_URL = (
     f"https://{LOCATION}-aiplatform.googleapis.com/v1/"
@@ -94,6 +94,10 @@ def remove_background(image_bytes: bytes):
 # ✅ 핵심 엔드포인트
 @app.post("/generate")
 async def generate(file: UploadFile = File(...), cloth_id: str = Form(...)):
+
+    print(f"--- 1. API 호출됨 ---")
+    print(f"--- 2. 받은 cloth_id: {cloth_id} ---")
+    
     # 1️⃣ 사용자 이미지 저장
     user_bytes = await file.read()
     save_path = UPLOADS_DIR / file.filename
@@ -102,77 +106,107 @@ async def generate(file: UploadFile = File(...), cloth_id: str = Form(...)):
     # 2️⃣ 옷 데이터 로드
     clothes = json.loads(CLOTHES_PATH.read_text(encoding="utf-8"))
     cloth = next((c for c in clothes if c["id"] == cloth_id), None)
+    
+    print(f"--- 3. 찾은 cloth 데이터: {cloth} ---") 
     if not cloth:
+        print("🚨🚨🚨 에러: cloth_id가 clothes.json에 없습니다!") 
         return JSONResponse(status_code=400, content={"error": "Invalid cloth_id"})
 
     # 3️⃣ 옷 이미지 로드 (로컬 or 웹)
     image_path = cloth["image_path"]
+    print(f"--- 4. 옷 이미지 로드 시도: {image_path} ---") # 👈 NEW
+    
     if image_path.startswith("http"):
         img_headers = {"User-Agent": "Mozilla/5.0"}
         resp = requests.get(image_path, headers=img_headers)
         if resp.status_code != 200:
+            print(f"🚨🚨🚨 에러: 웹 이미지 다운로드 실패! {image_path}") # 👈 NEW
             return JSONResponse(status_code=400, content={"error": "Image download failed"})
         cloth_img = resp.content
     else:
         local_path = Path(__file__).parent / image_path
+        print(f"--- 4.1. 계산된 로컬 경로: {local_path} ---") # 👈 NEW
+
         if not local_path.exists():
+            print(f"🚨🚨🚨 에러: 로컬 옷 파일을 찾을 수 없습니다! 경로: {local_path}") # 👈 NEW
             return JSONResponse(status_code=400, content={"error": f"로컬 옷 이미지를 찾을 수 없습니다: {image_path}"})
+        
         cloth_img = local_path.read_bytes()
+        print("--- 4.2. 로컬 옷 파일 읽기 성공 ---") # 👈 NEW
 
     # 3-1️⃣ 배경제거
-    #cloth_img = remove_background(cloth_img)
+    print("--- 5. 옷 배경 제거 시도 (remove.bg) ---") # 👈 NEW
+    cloth_img = remove_background(cloth_img) # 이 함수는 실패 시 스스로 에러 로그를 찍음
+    print("--- 5.1. 옷 배경 제거 완료 ---") # 👈 NEW
 
     # 4️⃣ base64 인코딩
+    print("--- 6. base64 인코딩 중 ---") # 👈 NEW
     user_b64 = base64.b64encode(user_bytes).decode("utf-8")
     cloth_b64 = base64.b64encode(cloth_img).decode("utf-8")
 
-    # ✅ 5️⃣ 프롬프트 (룩북 스타일로 변경)
-    prompt = (
-        f"패션 룩북 화보 스타일의 사진. "
-        f"모델이 '{cloth['name']}'을 입고 자연광 아래 포즈를 취하고 있는 장면. "
-        f"카메라는 상반신을 중심으로, 피부 질감과 조명이 자연스러우며, "
-        f"얼굴은 직접적으로 묘사하지 않고 스타일 전체 분위기를 강조해줘."
-    )
-
-    # ✅ 6️⃣ Vertex AI (Imagen 4 / 나노바나나) 요청 준비
+    # ✅ 6️⃣ Vertex AI (VTO) 요청 준비
     headers = {
         "Authorization": f"Bearer {ACCESS_TOKEN}",
         "Content-Type": "application/json"
     }
 
-    # ⚙️ Imagen 4.0용 요청 포맷
+    # ⚙️ 7. VTO용 요청 포맷 (진짜진짜 최종 수정)
     payload = {
         "instances": [
             {
-                "prompt": prompt,
-                "image": {"bytesBase64Encoded": user_b64},  # 사용자 이미지
+                # 👇 "personImage" 값도 "image" 키로 감싸기
+                "personImage": {
+                    "image": {"bytesBase64Encoded": user_b64}
+                },
+                "productImages": [
+                    {
+                        "image": {"bytesBase64Encoded": cloth_b64}
+                    }
+                ]
             }
         ],
         "parameters": {
-            "sampleCount": 2,          # 두 장 생성 → 품질 좋은 결과 선택 가능
-            "aspectRatio": "1:1",
-            "negativePrompt": "blur, distorted face, uncanny, low quality, glitch, watermark",
-            "guidanceScale": 7.5       # 스타일 가이드 강화
+            "productType": "UPPER_BODY_GARMENT" # (일단 '상의'로 고정)
         }
     }
+    
+    print("--- 7.1. (수정된 payload) 'image' 키 사용 버전 실행됨 ---") # (이건 저번에 넣은거)
+    
+    print("--- 7. Vertex AI 요청 페이로드 준비 완료 ---")
 
-    # ✅ 7️⃣ API 요청
+
+    # ✅ 8️⃣ API 요청
+    print("--- 8. Vertex AI API 호출 시도... ---") # 👈 NEW
     res = requests.post(API_URL, headers=headers, json=payload)
+    
+    # ✅ 9️⃣ 응답 확인 (이게 제일 중요!)
     if res.status_code != 200:
+        print(f"🚨🚨🚨 에러: Vertex AI API가 {res.status_code} 코드를 반환했습니다!") # 👈 NEW
+        print(f"🚨 Vertex AI 응답 내용: {res.text}") # 👈 NEW (에러 내용 보여줌)
         return JSONResponse(
             status_code=res.status_code,
             content={"error": "Vertex AI API 호출 실패", "detail": res.text},
         )
+    
+    print("--- 9. Vertex AI API 호출 성공 ---") # 👈 NEW
 
-    # ✅ 8️⃣ 응답 파싱
+    # ✅ 10. 응답 파싱
     result = res.json()
+
+    # ✅✅✅ [추가] API 응답 전체를 터미널에 찍어보자 ✅✅✅
+    print(f"--- 9.1. Vertex AI 전체 응답: {result} ---")
+
     predictions = result.get("predictions", [])
+    
+   # 👇 "bytesBase64Encoded"로 수정
     if predictions and "bytesBase64Encoded" in predictions[0]:
-        image_b64 = predictions[0]["bytesBase64Encoded"]
+        image_b64 = predictions[0]["bytesBase64Encoded"] 
+        print("--- 10. 최종 이미지 생성 성공 ---") 
         return {
-            "prompt": prompt,
             "cloth": cloth,
             "result_image": f"data:image/png;base64,{image_b64}"
         }
 
+    # 👇 이제 이 에러는 안 뜰 거야
+    print("🚨🚨🚨 에러: Vertex AI가 200을 줬지만 'bytesBase64Encoded' 키가 없습니다.") 
     return {"error": "이미지 데이터를 찾을 수 없습니다.", "detail": result}
