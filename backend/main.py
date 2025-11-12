@@ -100,8 +100,8 @@ async def generate(file: UploadFile = File(...), cloth_id: str = Form(...)):
     
     # 1️⃣ 사용자 이미지 저장
     user_bytes = await file.read()
-    save_path = UPLOADS_DIR / file.filename
-    save_path.write_bytes(user_bytes)
+    # save_path = UPLOADS_DIR / file.filename
+    # save_path.write_bytes(user_bytes)
 
     # 2️⃣ 옷 데이터 로드
     clothes = json.loads(CLOTHES_PATH.read_text(encoding="utf-8"))
