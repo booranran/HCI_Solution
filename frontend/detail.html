@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>제품 상세 - Fittory</title>
+  <script src="script/main.js" defer></script>
+  <style>
+    body { font-family: Pretendard, sans-serif; padding: 20px; background: #f8f9fa; }
+    .actions button { margin-right: 10px; padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; }
+    .style-btn { background: #00b894; color: white; }
+    .size-btn { background: #0984e3; color: white; }
+    .review-btn { background: #6c5ce7; color: white; }
+  </style>
+</head>
+<body>
+  <div id="productDetail"></div>
+
+  <div class="actions">
+    <button class="style-btn" onclick="goFeature('feature1.html')">스타일 추천</button>
+    <button class="size-btn" onclick="goFeature('feature2.html')">사이즈 예측</button>
+    <button class="review-btn" onclick="goFeature('feature3.html')">리뷰 분석</button>
+  </div>
+</body>
+</html>

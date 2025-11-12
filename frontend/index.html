@@ -1,26 +1,29 @@
 <!DOCTYPE html>
 <html lang="ko">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  </head>
+<head>
+  <meta charset="UTF-8">
+  <title>Fittory - 온라인 핏 시뮬레이터</title>
+  <link rel="stylesheet" href="style/style.css">
+  <script src="script/main.js" defer></script>
+</head>
+<body>
+  <header>
+    <h1>👕 Fittory</h1>
+    <p>내 체형에 맞는 옷, 직접 확인해보세요.</p>
+  </header>
 
-  <body>
-    <nav style="margin-bottom: 20px">
-      <a href="index.html"><button>🏠 가상 피팅 (홈)</button></a>
-      <a href="feature1.html"><button>✨ 기능 1</button></a>
-      <a href="feature2.html"><button>🚀 기능 2</button></a>
-    </nav>
+  <section class="product-grid">
+    <div class="product" onclick="viewDetail('shirt001')">
+      <img src="/backend/clothes/shirt.png" alt="베이직 셔츠">
+      <h3>베이직 셔츠</h3>
+      <p>₩39,000</p>
+    </div>
 
-    <html class="container">
-      <h1>🧥 Fittory Prototype</h1>
-      <body>
-        <nav>
-          <a href="index.html"><button>🏠 홈으로 돌아가기</button></a>
-        </nav>
-
-        <h1>✨ 여기는 기능 1 페이지</h1>
-      </body>
-    </html>
-  </body>
+    <div class="product" onclick="viewDetail('coat001')">
+      <img src="/backend/clothes/cort1.png" alt="베이직 코트">
+      <h3>베이직 코트</h3>
+      <p>₩69,000</p>
+    </div>
+  </section>
+</body>
 </html>
