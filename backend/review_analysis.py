@@ -5,6 +5,8 @@ from dotenv import load_dotenv
 
 import google.generativeai as genai
 import pandas as pd
+from termcolor import colored
+
 
 # ----------------------------
 # 환경 설정
@@ -99,20 +101,46 @@ def run_analysis(input_path=REVIEWS_PATH, output_path=OUT_CSV, limit=None):
 # ----------------------------
 # 요약 리포트 생성 (선택)
 # ----------------------------
-def summary_report(csv_path=OUT_CSV):
+def pretty_summary_report(csv_path=OUT_CSV):
     df = pd.read_csv(csv_path)
-    report = {
-        "총리뷰수": len(df),
-        "정사이즈비율": round((df["size_match"] == "정사이즈").mean() * 100, 1),
-        "긍정리뷰비율": round((df["fit_sentiment"] == "긍정").mean() * 100, 1),
-        "재질언급비율": round(df["material_mention"].mean() * 100, 1),
-    }
-    print("\n📊 요약 리포트")
-    for k, v in report.items():
-        print(f"{k}: {v}%")
-    return report
+    total = len(df)
+    size_rate = (df["size_match"] == "정사이즈").mean()
+    pos_rate = (df["fit_sentiment"] == "긍정").mean()
+    mat_rate = df["material_mention"].mean()
+
+    # 색상 강조
+    def color_num(val):
+        if val >= 0.7: return colored(f"{val*100:.1f}%", "green")
+        elif val >= 0.4: return colored(f"{val*100:.1f}%", "yellow")
+        else: return colored(f"{val*100:.1f}%", "red")
+
+    print("\n🧵  Fittory 리뷰 분석 리포트")
+    print("───────────────────────────────")
+    print(f"👕 총 리뷰 수: {total}건")
+    print(f"📏 정사이즈 비율: {color_num(size_rate)}")
+    print(f"😊 긍정 리뷰 비율: {color_num(pos_rate)}")
+    print(f"🧶 재질 언급 비율: {color_num(mat_rate)}")
+    print("───────────────────────────────")
+
+    # 인사이트 문장 자동 생성
+    insights = []
+    if size_rate < 0.5:
+        insights.append("👖 사이즈 불만이 많은 제품이에요. 상세 사이즈 안내가 필요합니다.")
+    else:
+        insights.append("✨ 대부분 사용자들이 정사이즈라고 평가했어요.")
+
+    if mat_rate > 0.7:
+        insights.append("🌿 재질 관련 언급이 많아요. 품질이나 촉감에 대한 리뷰 강조가 좋아요.")
+    if pos_rate < 0.4:
+        insights.append("😕 전반적인 만족도가 낮아요. 후기 분석으로 문제 포인트를 파악해보세요.")
+    elif pos_rate > 0.7:
+        insights.append("💖 사용자들의 만족도가 높아요. 대표 후기 노출에 활용하세요!")
+
+    print("\n💡 인사이트")
+    for line in insights:
+        print("  •", line)
 
 
 if __name__ == "__main__":
     run_analysis()
-    summary_report()
+    pretty_summary_report()
