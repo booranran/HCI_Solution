@@ -1,0 +1,22 @@
+아래는 의류 상품 리뷰입니다. 리뷰를 분석해 아래 스키마에 맞춰 **JSON만** 출력하세요.
+- fit_sentiment: (긍정/보통/부정)
+- size_match: (작다/정사이즈/크다/언급없음)
+- material_mention: (true/false)
+- material_quality: (좋음/보통/나쁨/언급없음)
+- areas_mentioned: (다음 중 0개 이상 선택: 어깨,가슴,허리,소매길이,총장,목,기타)
+- summary: (한 문장 요약, 한국어)
+- confidence: (0.0~1.0 사이 수치)
+
+출력 형식 예시:
+{
+  "fit_sentiment": "보통",
+  "size_match": "작다",
+  "material_mention": true,
+  "material_quality": "보통",
+  "areas_mentioned": ["소매길이","목"],
+  "summary": "소매가 짧고 목이 다소 끼는 편.",
+  "confidence": 0.82
+}
+
+리뷰:
+"{review_text}"

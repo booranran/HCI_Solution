@@ -1,0 +1,54 @@
+{
+  "fit_sentiment": {
+    "type": "enum",
+    "values": [
+      "긍정",
+      "보통",
+      "부정"
+    ]
+  },
+  "size_match": {
+    "type": "enum",
+    "values": [
+      "작다",
+      "정사이즈",
+      "크다",
+      "언급없음"
+    ]
+  },
+  "material_mention": {
+    "type": "boolean"
+  },
+  "material_quality": {
+    "type": "enum",
+    "values": [
+      "좋음",
+      "보통",
+      "나쁨",
+      "언급없음"
+    ]
+  },
+  "areas_mentioned": {
+    "type": "set",
+    "values": [
+      "어깨",
+      "가슴",
+      "허리",
+      "소매길이",
+      "총장",
+      "목",
+      "기타"
+    ]
+  },
+  "summary": {
+    "type": "string",
+    "desc": "한 문장 요약(한국어)"
+  },
+  "confidence": {
+    "type": "number",
+    "range": [
+      0.0,
+      1.0
+    ]
+  }
+}

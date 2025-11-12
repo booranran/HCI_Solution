@@ -1,0 +1,118 @@
+# modules/review_analysis.py
+import os, json, re, csv, time
+from pathlib import Path
+from dotenv import load_dotenv
+
+import google.generativeai as genai
+import pandas as pd
+
+# ----------------------------
+# 환경 설정
+# ----------------------------
+# 1. BASE_DIR (루트 폴더) 정의를 맨 위로
+BASE_DIR = Path(__file__).resolve().parents[1] 
+
+# 2. .env 파일 경로를 정확히 지정 (이게 루트에 있는 .env를 읽음)
+dotenv_path = BASE_DIR / ".env"
+load_dotenv(dotenv_path) 
+
+# 3. .env 에 새로 추가한 "GEMINI_API_KEY"를 사용
+api_key = os.getenv("GEMINI_API_KEY") 
+
+# ✅ 4. (디버깅) 키가 진짜 로드됐는지 확인
+if not api_key:
+    print("🚨🚨🚨 에러: .env 파일에서 GEMINI_API_KEY를 찾을 수 없습니다!")
+    print(f"찾으려는 .env 파일 경로: {dotenv_path}")
+    print("--- .env 파일 내용 (확인용) ---")
+    try:
+        print(dotenv_path.read_text())
+    except FileNotFoundError:
+        print(".env 파일 자체가 존재하지 않습니다.")
+    print("----------------------------")
+    exit() # 👈 키 없으면 그냥 멈춤
+
+genai.configure(api_key=api_key) 
+print("✅ Gemini API 키 로드 성공!") # 👈 디버깅용
+
+# 5. MODEL_NAME (오타 수정했던 거)
+MODEL_NAME = "gemini-2.5-flash" 
+
+# 6. 나머지 경로 설정
+DATA_DIR = BASE_DIR / "data"
+REVIEWS_PATH = DATA_DIR / "reviews_sample.json"
+OUT_CSV = DATA_DIR / "review_results.csv"
+
+# 7. gemini_prompt.txt 경로 (저번에 수정한 거)
+PROMPT_TEMPLATE = (Path(__file__).resolve().parent / "gemini_prompt.txt").read_text(encoding="utf-8")
+
+# ----------------------------
+# Gemini 호출 함수
+# ----------------------------
+def call_gemini(review_text: str) -> str:
+    prompt = PROMPT_TEMPLATE.replace("{review_text}", review_text)
+    model = genai.GenerativeModel(MODEL_NAME)
+    response = model.generate_content(prompt)
+    return response.text
+
+
+def coerce_json(text: str):
+    """Gemini 응답에서 JSON만 추출"""
+    text = text.strip()
+    text = re.sub(r"^```(?:json)?", "", text)
+    text = re.sub(r"```$", "", text)
+    match = re.search(r"\{.*\}", text, flags=re.S)
+    json_str = match.group(0) if match else text
+    try:
+        return json.loads(json_str)
+    except Exception as e:
+        print("JSON 파싱 실패:", e)
+        return None
+
+
+# ----------------------------
+# 리뷰 분석 메인 함수
+# ----------------------------
+def run_analysis(input_path=REVIEWS_PATH, output_path=OUT_CSV, limit=None):
+    """리뷰 JSON 파일을 분석하고 CSV로 저장"""
+    with open(input_path, "r", encoding="utf-8") as f:
+        reviews = json.load(f)
+
+    results = []
+    for i, review in enumerate(reviews[:limit]):
+        rid, text, stars = review.get("id"), review.get("text"), review.get("stars")
+        print(f"[{i+1}/{len(reviews)}] 분석 중: {text[:40]}...")
+        raw = call_gemini(text)
+        parsed = coerce_json(raw)
+        if not parsed:
+            print(f"⚠️ {rid} 파싱 실패")
+            continue
+        parsed["id"], parsed["stars"] = rid, stars
+        results.append(parsed)
+        time.sleep(0.5)
+
+    df = pd.DataFrame(results)
+    df.to_csv(output_path, index=False, encoding="utf-8-sig")
+    print(f"✅ {len(df)}개 리뷰 분석 완료 → {output_path.name}")
+    return df
+
+
+# ----------------------------
+# 요약 리포트 생성 (선택)
+# ----------------------------
+def summary_report(csv_path=OUT_CSV):
+    df = pd.read_csv(csv_path)
+    report = {
+        "총리뷰수": len(df),
+        "정사이즈비율": round((df["size_match"] == "정사이즈").mean() * 100, 1),
+        "긍정리뷰비율": round((df["fit_sentiment"] == "긍정").mean() * 100, 1),
+        "재질언급비율": round(df["material_mention"].mean() * 100, 1),
+    }
+    print("\n📊 요약 리포트")
+    for k, v in report.items():
+        print(f"{k}: {v}%")
+    return report
+
+
+if __name__ == "__main__":
+    run_analysis()
+    summary_report()
