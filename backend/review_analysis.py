@@ -77,12 +77,6 @@ def coerce_json(text: str):
 # ----------------------------
 # 리뷰 분석 메인 함수
 # ----------------------------
-# [수정] run_analysis 함수
-
-
-# ----------------------------
-# 리뷰 분석 메인 함수
-# ----------------------------
 def run_analysis(input_path=REVIEWS_PATH, output_path=OUT_CSV, limit=None):
     """리뷰 JSON 파일을 분석하고 CSV로 저장"""
 
@@ -109,7 +103,7 @@ def run_analysis(input_path=REVIEWS_PATH, output_path=OUT_CSV, limit=None):
         # 👇 product_id도 결과에 추가하기
         parsed["id"], parsed["stars"], parsed["product_id"], parsed["text"] = rid, stars, product_id, text 
         results.append(parsed)
-        time.sleep(6)
+        time.sleep(6.1)
 
     df = pd.DataFrame(results)
     # 👇 이제 CSV 파일에는 product_id 컬럼이 포함됨
