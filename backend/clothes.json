@@ -1,18 +1,34 @@
 [
   {
-    "id": "shirt",
+    "id": "shirt001",
     "name": "화이트 셔츠",
     "image_path": "clothes/shirt.png",
     "fit": "slim",
     "color": "white",
-    "category": "UPPER_BODY_GARMENT" 
+    "category": "UPPER_BODY_GARMENT",
+    "fabric": "polySpan",
+    "price": "₩39,000",
+    "measurements": {
+      "shoulder": 46,
+      "chest": 100,
+      "sleeve": 62,
+      "length": 70
+    }
   },
   {
-    "id": "cort1",
+    "id": "coat001",
     "name": "블랙 코트",
     "image_path": "clothes/cort1.png",
     "fit": "oversize",
     "color": "black",
-    "category": "UPPER_BODY_GARMENT" 
+    "category": "UPPER_BODY_GARMENT",
+    "fabric": "denim",
+    "price": "₩69,000",
+    "measurements": {
+      "shoulder": 48,
+      "chest": 106,
+      "sleeve": 61,
+      "length": 68
+    }
   }
 ]

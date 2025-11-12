@@ -12,11 +12,13 @@
     input, select { margin: 5px; padding: 4px; }
     button { margin-top: 10px; padding: 6px 14px; cursor: pointer; background: #007bff; color: white; border: none; border-radius: 4px; }
     button:hover { background: #0056b3; }
+    #clothInfo { background: white; padding: 10px; border-radius: 8px; margin-bottom: 20px; }
   </style>
 </head>
 <body>
-  <h2>👕 의류 여유치 계산기</h2>
-  
+  <h2>👕 솔루션2 - 여유치 계산</h2>
+  <div id="clothInfo"></div>
+
   <div>
     <h4>내 신체 치수 입력 (cm)</h4>
     어깨: <input id="userShoulder" type="number" placeholder="ex. 45">
@@ -26,23 +28,11 @@
   </div>
 
   <div>
-    <h4>옷 실측 입력 (cm)</h4>
-    어깨: <input id="clothShoulder" type="number" placeholder="ex. 46">
-    가슴: <input id="clothChest" type="number" placeholder="ex. 100">
-    팔 길이: <input id="clothSleeve" type="number" placeholder="ex. 62">
-    총 길이: <input id="clothLength" type="number" placeholder="ex. 70">
-  </div>
-
-  <div>
-    <h4>원단 선택</h4>
-    <select id="fabric">
-      <option value="cotton">면 100%</option>
-      <option value="polyester">폴리</option>
-      <option value="polySpan">폴리+스판</option>
-      <option value="rayon">레이온/니트</option>
-      <option value="linen">린넨</option>
-      <option value="denim">데님</option>
-    </select>
+    <h4>옷 실측 (자동 불러오기)</h4>
+    어깨: <input id="clothShoulder" type="number" readonly>
+    가슴: <input id="clothChest" type="number" readonly>
+    팔 길이: <input id="clothSleeve" type="number" readonly>
+    총 길이: <input id="clothLength" type="number" readonly>
   </div>
 
   <button onclick="showResult()">계산하기</button>
