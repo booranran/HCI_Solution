@@ -19,11 +19,11 @@ dotenv_path = BASE_DIR / ".env"
 load_dotenv(dotenv_path)
 
 # 3. .env 에 새로 추가한 "GEMINI_API_KEY"를 사용
-api_key = os.getenv("GEMINI_API_KEY")
+api_key = os.getenv("GOOGLE_API_KEY")
 
 # ✅ 4. (디버깅) 키가 진짜 로드됐는지 확인
 if not api_key:
-    print("🚨🚨🚨 에러: .env 파일에서 GEMINI_API_KEY를 찾을 수 없습니다!")
+    print("🚨🚨🚨 에러: .env 파일에서 GOOGLE_API_KEY 찾을 수 없습니다!")
     print(f"찾으려는 .env 파일 경로: {dotenv_path}")
     print("--- .env 파일 내용 (확인용) ---")
     try:
