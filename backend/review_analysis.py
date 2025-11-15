@@ -11,19 +11,20 @@ from termcolor import colored
 # ----------------------------
 # 환경 설정
 # ----------------------------
-# 1. BASE_DIR (루트 폴더) 정의를 맨 위로
-BASE_DIR = Path(__file__).resolve().parents[1]
+# 1. 'backend' 폴더와 '루트' 폴더 경로를 따로 정의
+SCRIPT_DIR = Path(__file__).resolve().parent  # 👈 .../backend
+BASE_DIR = SCRIPT_DIR.parent               # 👈 .../HCI_Solution
 
-# 2. .env 파일 경로를 정확히 지정 (이게 루트에 있는 .env를 읽음)
-dotenv_path = BASE_DIR / ".env"
-load_dotenv(dotenv_path)
+# 2. .env 파일은 'SCRIPT_DIR' (backend) 안에 있음
+dotenv_path = SCRIPT_DIR / ".env" 
+load_dotenv(dotenv_path) 
 
 # 3. .env 에 새로 추가한 "GEMINI_API_KEY"를 사용
-api_key = os.getenv("GOOGLE_API_KEY")
+api_key = os.getenv("GEMINI_API_KEY") 
 
 # ✅ 4. (디버깅) 키가 진짜 로드됐는지 확인
 if not api_key:
-    print("🚨🚨🚨 에러: .env 파일에서 GOOGLE_API_KEY 찾을 수 없습니다!")
+    print("🚨🚨🚨 에러: .env 파일에서 GEMINI_API_KEY를 찾을 수 없습니다!")
     print(f"찾으려는 .env 파일 경로: {dotenv_path}")
     print("--- .env 파일 내용 (확인용) ---")
     try:
@@ -31,24 +32,21 @@ if not api_key:
     except FileNotFoundError:
         print(".env 파일 자체가 존재하지 않습니다.")
     print("----------------------------")
-    exit()  # 👈 키 없으면 그냥 멈춤
+    exit() # 👈 키 없으면 그냥 멈춤
 
-genai.configure(api_key=api_key)
-print("✅ Gemini API 키 로드 성공!")  # 👈 디버깅용
+genai.configure(api_key=api_key) 
+print("✅ Gemini API 키 로드 성공!") # 👈 디버깅용
 
 # 5. MODEL_NAME (오타 수정했던 거)
 MODEL_NAME = "gemini-2.5-flash"
 
-# 6. 나머지 경로 설정
+# 6. 'data' 폴더는 'BASE_DIR' (루트) 아래에 있음
 DATA_DIR = BASE_DIR / "data"
 REVIEWS_PATH = DATA_DIR / "reviews_sample.json"
 OUT_CSV = DATA_DIR / "review_results.csv"
 
-# 7. gemini_prompt.txt 경로 (저번에 수정한 거)
-PROMPT_TEMPLATE = (Path(__file__).resolve().parent / "gemini_prompt.txt").read_text(
-    encoding="utf-8"
-)
-
+# 7. gemini_prompt.txt는 'SCRIPT_DIR' (backend) 안에 있음
+PROMPT_TEMPLATE = (SCRIPT_DIR / "gemini_prompt.txt").read_text(encoding="utf-8")
 
 # ----------------------------
 # Gemini 호출 함수
