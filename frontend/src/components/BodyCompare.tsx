@@ -41,7 +41,7 @@ const BodyCompare = () => {
     navigate("/body-compare/result", {
       state: {
         formData: form,     // 폼 데이터
-        category: category, // 상의/하의 구분
+        category: location.state.category, // 상의/하의 구분
         productSizes: location.state.productSizes, // (필요)
         fabric: location.state.fabric,           // (필요)
       },

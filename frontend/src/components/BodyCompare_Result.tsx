@@ -1,6 +1,5 @@
-import React, { useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-//import './index.css';
 import { Sparkles, CheckCircle2 } from "lucide-react";
 import svgPaths from "../imports/svg-0s5keehpt3";
 

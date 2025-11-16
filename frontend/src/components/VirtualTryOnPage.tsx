@@ -2,19 +2,38 @@ import { useState, useRef } from 'react';
 import { ArrowLeft, Upload, Camera, X, Sparkles, CheckCircle2 } from 'lucide-react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { toast } from 'sonner';
+import { useLocation, useNavigate } from "react-router-dom";
 
-interface VirtualTryOnPageProps {
-  product: any;
-  onBack: () => void;
-}
 
-export function VirtualTryOnPage({ product, onBack }: VirtualTryOnPageProps) {
+export function VirtualTryOnPage() {
+
+  const location = useLocation();
+  const navigate = useNavigate();
+
   const [step, setStep] = useState(1);
   const [userImage, setUserImage] = useState<string | null>(null);
   const [resultImage, setResultImage] = useState<string | null>(null);
   const [processing, setProcessing] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const product = location.state?.product;
+
+  const handleBack = () => {
+    navigate(-1); // 그냥 '뒤로 가기'
+    // navigate('/product-detail', { state: { product: product } }); // 또는 상세 페이지로
+  };
+
+  if (!product) {
+    return (
+      <div>
+        <p>상품 정보가 없습니다.</p>
+        <button onClick={handleBack}>뒤로가기</button>
+      </div>
+    );
+  }
+
+
 
   const handleFileSelect = (file: File) => {
     if (file && file.type.startsWith('image/')) {
@@ -107,7 +126,7 @@ export function VirtualTryOnPage({ product, onBack }: VirtualTryOnPageProps) {
       <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 py-5">
           <button
-            onClick={onBack}
+            onClick={handleBack}
             className="flex items-center gap-2 text-gray-600 hover:text-primary transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
@@ -372,7 +391,7 @@ export function VirtualTryOnPage({ product, onBack }: VirtualTryOnPageProps) {
                 다시 시도하기
               </button>
               <button
-                onClick={onBack}
+                onClick={handleBack}
                 className="bg-primary hover:bg-accent text-white py-4 rounded-full transition-all hover:shadow-lg text-center"
               >
                 상품 페이지로

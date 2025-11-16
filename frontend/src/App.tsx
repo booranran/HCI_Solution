@@ -7,7 +7,7 @@ import { Benefits } from './components/Benefits';
 import { Testimonials } from './components/Testimonials';
 import { Footer } from './components/Footer';
 import { CartSheet } from './components/CartSheet';
-import { AIFittingPage } from './components/AIFittingPage';
+//import { AIFittingPage } from './components/AIFittingPage';
 import { VirtualTryOnPage } from './components/VirtualTryOnPage';
 import { ProductDetailPage } from './components/ProductDetailPage';
 import { ProductListPage } from './components/ProductListPage';
@@ -190,11 +190,9 @@ export default function App() {
           
           {/* ⭐️ Route 5: "우리가" 만든 AI 핏 비교 (결과) */}
           <Route path="/body-compare/result" element={<BodyCompareResult />} />
-          
-          {/* ❌ 'AIFittingPage'는 이제 우리 프로젝트에 없음! ❌ */}
-          
+                    
           {/* ⭐️ Route 6: 가상 피팅 (나중에 추가) */}
-          {/* <Route path="/virtual-tryon" element={<VirtualTryOnPage />} /> */}
+          {<Route path="/virtual-tryon" element={<VirtualTryOnPage />} />}
         </Routes>
       </BrowserRouter>
     </CartProvider>
