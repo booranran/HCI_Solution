@@ -18,7 +18,7 @@ const BodyCompare = () => {
     shoulder: "",
     chest: "",
     sleeve: "",
-    topLength: "",
+    length: "",
     waist: "",
     hip: "",
     thigh: "",
@@ -119,8 +119,8 @@ const BodyCompare = () => {
               <label className="block text-sm text-gray-600 mb-2">원하는 총장 (cm) (선택)</label>
               <input
                 type="number"
-                name="topLength"
-                value={form.topLength}
+                name="length"
+                value={form.length}
                 onChange={handleChange}
                 className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:outline-none focus:border-accent transition-colors"
               />
