@@ -92,34 +92,7 @@ export function AIFittingPage({ onBack }: AIFittingPageProps) {
     }
 
     setAnalyzing(true);
-    
-    // TODO: Replace with actual API call
-    // Example API integration structure:
-    /*
-    try {
-      const response = await fetch('YOUR_API_ENDPOINT', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          height: measurements.height,
-          weight: measurements.weight,
-          chest: measurements.chest,
-          waist: measurements.waist,
-          shoulder: measurements.shoulder,
-        }),
-      });
-
-      const data = await response.json();
-      setResult(data);
-    } catch (error) {
-      toast.error('분석 중 오류가 발생했습니다');
-      setAnalyzing(false);
-      return;
-    }
-    */
-    
+      
     // Simulate AI analysis (remove this when implementing real API)
     setTimeout(() => {
       const height = parseInt(measurements.height);

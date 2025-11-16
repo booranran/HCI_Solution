@@ -17,83 +17,34 @@ import { Search, ShoppingCart, User, Heart, Menu, Image } from 'lucide-react';
 import { useState } from 'react';
 import { Toaster } from './components/ui/sonner';
 
+import BodyCompare from './components/BodyCompare';
+import BodyCompareResult from './components/BodyCompare_Result';
+import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
+
+
 type Page = 'home' | 'ai-fitting' | 'virtual-tryon' | 'product-detail' | 'product-list';
 
-function MainApp() {
+function HomePage() {
   const [cartOpen, setCartOpen] = useState(false);
   const [imageSearchOpen, setImageSearchOpen] = useState(false);
-  const [currentPage, setCurrentPage] = useState<Page>('home');
-  const [selectedProduct, setSelectedProduct] = useState<any>(null);
-  const [selectedCategory, setSelectedCategory] = useState<string>('전체');
+
   const { cartCount } = useCart();
 
+  const navigate = useNavigate();
+
   const handleProductClick = (product: any) => {
-    setSelectedProduct(product);
-    setCurrentPage('product-detail');
+   navigate('/product-detail', { state: { product: product } });
   };
 
   const handleCategoryClick = (category: string) => {
-    setSelectedCategory(category);
-    setCurrentPage('product-list');
+    navigate('/products', { state: { category: category } });
   };
 
   const handleImageSearch = (imageFile: File) => {
-    // Close the modal and show search results
     setImageSearchOpen(false);
-    setSelectedCategory('이미지 검색 결과');
-    setCurrentPage('product-list');
+    navigate('/products', { state: { category: '이미지 검색 결과' } });
   };
 
-  if (currentPage === 'ai-fitting') {
-    return <AIFittingPage onBack={() => setCurrentPage('product-detail')} />;
-  }
-
-  if (currentPage === 'virtual-tryon' && selectedProduct) {
-    return (
-      <VirtualTryOnPage
-        product={selectedProduct}
-        onBack={() => setCurrentPage('product-detail')}
-      />
-    );
-  }
-
-  if (currentPage === 'product-detail' && selectedProduct) {
-    return (
-      <>
-        <ProductDetailPage
-          product={selectedProduct}
-          onBack={() => setCurrentPage('home')}
-          onStartAIFitting={() => setCurrentPage('ai-fitting')}
-          onStartVirtualTryOn={() => setCurrentPage('virtual-tryon')}
-          onOpenImageSearch={() => setImageSearchOpen(true)}
-          onOpenCart={() => setCartOpen(true)}
-        />
-        
-        {/* Cart Sheet */}
-        <CartSheet open={cartOpen} onOpenChange={setCartOpen} />
-        
-        {/* Image Search Modal */}
-        <ImageSearchModal
-          isOpen={imageSearchOpen}
-          onClose={() => setImageSearchOpen(false)}
-          onSearch={handleImageSearch}
-        />
-        
-        {/* Toast Notifications */}
-        <Toaster />
-      </>
-    );
-  }
-
-  if (currentPage === 'product-list') {
-    return (
-      <ProductListPage
-        category={selectedCategory}
-        onBack={() => setCurrentPage('home')}
-        onProductClick={handleProductClick}
-      />
-    );
-  }
 
   return (
     <div className="min-h-screen bg-white">
@@ -220,7 +171,32 @@ function MainApp() {
 export default function App() {
   return (
     <CartProvider>
-      <MainApp />
+      <BrowserRouter>
+        {/* Toaster는 Routes 밖에 두면 모든 페이지에서 알림이 뜸 */}
+        <Toaster />
+        
+        <Routes>
+          {/* ⭐️ Route 1: 홈페이지 ('/') */}
+          <Route path="/" element={<HomePage />} />
+          
+          {/* ⭐️ Route 2: 상품 목록 페이지 */}
+          <Route path="/products" element={<ProductListPage />} />
+          
+          {/* ⭐️ Route 3: 상품 상세 페이지 */}
+          <Route path="/product-detail" element={<ProductDetailPage />} />
+          
+          {/* ⭐️ Route 4: "우리가" 만든 AI 핏 비교 (폼) */}
+          <Route path="/body-compare" element={<BodyCompare />} />
+          
+          {/* ⭐️ Route 5: "우리가" 만든 AI 핏 비교 (결과) */}
+          <Route path="/body-compare/result" element={<BodyCompareResult />} />
+          
+          {/* ❌ 'AIFittingPage'는 이제 우리 프로젝트에 없음! ❌ */}
+          
+          {/* ⭐️ Route 6: 가상 피팅 (나중에 추가) */}
+          {/* <Route path="/virtual-tryon" element={<VirtualTryOnPage />} /> */}
+        </Routes>
+      </BrowserRouter>
     </CartProvider>
   );
 }

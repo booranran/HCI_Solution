@@ -1,32 +1,50 @@
-import { useState, useEffect } from 'react';
-import { ArrowLeft, Heart, Star, Sparkles, TrendingUp, MessageSquare, Ruler, Shirt, ChevronLeft, ChevronRight, Search, ShoppingCart, Image } from 'lucide-react';
-import { ImageWithFallback } from './figma/ImageWithFallback';
-import { useCart } from './CartContext';
-import { toast } from 'sonner';
-import suitModelFront from '../assets/blazer/blazer1.jpg';
-import suitModelBack from '../assets/blazer/blazer3.jpg';
-import suitProductFront from '../assets/blazer/blazer4.jpg';
-import suitProductBack from '../assets/blazer/blazer5.jpg';
-import coatImage from '../assets/coat/coat1.jpg';
-import coatModelBack from '../assets/coat/coat2.jpg';
-import coatProductFront from '../assets/coat/coat3.jpg';
-import coatProductBack from '../assets/coat/coat4.jpg';
-import jacketImage from '../assets/jakcet/jacket1.jpg';
-import jacketModelBack from '../assets/jakcet/jacket2.jpg';
-import jacketProductFront from '../assets/jakcet/jacket3.jpg';
-import jacketProductBack from '../assets/jakcet/jacket4.jpg';
-import shirtImage from '../assets/shirts/shirts2.jpg';
-import shirtProductFront from '../assets/shirts/shirts3.jpg';
-import shirtProductBack from '../assets/shirts/shirts4.jpg';
-import dressModelBack from '../assets/dress/dress2.jpg';
-import dressProductFront from '../assets/dress/dress3.jpg';
-import dressProductBack from '../assets/dress/dress4.jpg';
-import sweaterModelSide from '../assets/sweater/sweater2.jpg';
-import sweaterProductFront from '../assets/sweater/sweater3.jpg';
-import sweaterProductBack from '../assets/sweater/sweater4.jpg';
-import trenchModelSide from '../assets/trench/trench2.jpg';
-import trenchProductFront from '../assets/trench/trench3.jpg';
-import trenchProductBack from '../assets/trench/trench4.jpg';
+import { useState, useEffect } from "react";
+import {
+  ArrowLeft,
+  Heart,
+  Star,
+  Sparkles,
+  TrendingUp,
+  MessageSquare,
+  Ruler,
+  Shirt,
+  ChevronLeft,
+  ChevronRight,
+  Search,
+  ShoppingCart,
+  Image,
+} from "lucide-react";
+import { ImageWithFallback } from "./figma/ImageWithFallback";
+import { useCart } from "./CartContext";
+import { toast } from "sonner";
+import suitModelFront from "../assets/blazer/blazer1.jpg";
+import suitModelBack from "../assets/blazer/blazer3.jpg";
+import suitProductFront from "../assets/blazer/blazer4.jpg";
+import suitProductBack from "../assets/blazer/blazer5.jpg";
+import coatImage from "../assets/coat/coat1.jpg";
+import coatModelBack from "../assets/coat/coat2.jpg";
+import coatProductFront from "../assets/coat/coat3.jpg";
+import coatProductBack from "../assets/coat/coat4.jpg";
+import jacketImage from "../assets/jakcet/jacket1.jpg";
+import jacketModelBack from "../assets/jakcet/jacket2.jpg";
+import jacketProductFront from "../assets/jakcet/jacket3.jpg";
+import jacketProductBack from "../assets/jakcet/jacket4.jpg";
+import shirtImage from "../assets/shirts/shirts2.jpg";
+import shirtProductFront from "../assets/shirts/shirts3.jpg";
+import shirtProductBack from "../assets/shirts/shirts4.jpg";
+import dressModelBack from "../assets/dress/dress2.jpg";
+import dressProductFront from "../assets/dress/dress3.jpg";
+import dressProductBack from "../assets/dress/dress4.jpg";
+import sweaterModelSide from "../assets/sweater/sweater2.jpg";
+import sweaterProductFront from "../assets/sweater/sweater3.jpg";
+import sweaterProductBack from "../assets/sweater/sweater4.jpg";
+import trenchModelSide from "../assets/trench/trench2.jpg";
+import trenchProductFront from "../assets/trench/trench3.jpg";
+import trenchProductBack from "../assets/trench/trench4.jpg";
+import { useLocation, useNavigate } from "react-router-dom";
+import { ImageSearchModal } from "../components/ImageSearchModal";
+import { CartSheet } from "../components/CartSheet";
+import { set } from "react-hook-form";
 
 interface Review {
   id: number;
@@ -62,87 +80,157 @@ interface Product {
   aiReviewSummary?: AiSummary;
 }
 
-interface ProductDetailPageProps {
-  product: Product;
-  onBack: () => void;
-  onStartAIFitting?: () => void;
-  onStartVirtualTryOn?: () => void;
-  onOpenImageSearch?: () => void;
-  onOpenCart?: () => void;
-}
-
-export function ProductDetailPage({ product, onBack, onStartAIFitting, onStartVirtualTryOn, onOpenImageSearch, onOpenCart }: ProductDetailPageProps) {
-  const [selectedSize, setSelectedSize] = useState('');
+export function ProductDetailPage() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [selectedSize, setSelectedSize] = useState("");
   const [quantity, setQuantity] = useState(1);
   const [showAISummary, setShowAISummary] = useState(false);
   const [selectedImage, setSelectedImage] = useState(0);
-  const [activeTab, setActiveTab] = useState('description');
+  const [activeTab, setActiveTab] = useState("description");
   const [searchExpanded, setSearchExpanded] = useState(false);
   const { addToCart, cartItems } = useCart();
+  const [imageSearchOpen, setImageSearchOpen] = useState(false);
+  const [cartOpen, setCartOpen] = useState(false);
 
+  const product = location.state?.product;
+
+  const handleBack = () => {
+    navigate(-1); // "그냥 뒤로 한 칸 가기"
+  };
+
+  /** ⭐️ 'AI 사이즈 추천' 버튼을 눌렀을 때 실행할 함수 */
+  const handleStartAIFitting = () => {
+    // 🚨 1. 'sizeSpecs' (상품 사이즈 정보)
+    // 걔가 하드코딩해놓은 'sizeSpecs' 변수(가짜 데이터)를 그대로 넘긴다
+    const productSizes = sizeSpecs;
+
+    // 🚨 2. 'category' (상의/하의)
+    // 걔가 'product.category'에 "남성 컬렉션" 이딴 걸 넣어놨으니,
+    // 이걸 'tops' / 'bottoms'로 우리가 '추측'해서 바꿔준다
+    let category: "tops" | "bottoms" = "tops"; // 기본값
+    if (
+      product.category.includes("팬츠") ||
+      product.category.includes("스커트")
+    ) {
+      category = "bottoms";
+    }
+
+    // 🚨 3. 'fabric' (원단)
+    // 'product.fabric'이 없으면 임시로 'cotton'을 넘긴다
+    const fabric = product.fabric || "cotton";
+
+    // ⭐️ 4. "진짜" 페이지 이동 (모든 데이터를 싣고!)
+    navigate("/body-compare", {
+      state: {
+        productSizes: productSizes, // 1. 걔가 만든 가짜 사이즈표
+        category: category, // 2. 우리가 추측한 상/하의
+        fabric: fabric, // 3. 우리가 땜빵한 원단
+      },
+    });
+  };
+
+  const handleOpenImageSearch = () => {
+    setImageSearchOpen(true);
+  };
+
+  const handleImageSearch = (imageFile: File) => {
+    setImageSearchOpen(false); // 모달 닫고
+    navigate("/products", { state: { category: "이미지 검색 결과" } }); // 이동
+  };
+
+  const handleOpenCart = () => {
+    setCartOpen(true);
+  };
+
+  // ... (handleBack, handleStartAIFitting 함수) ...
+
+  /** ⭐️ '가상 피팅 체험' 버튼을 눌렀을 때 실행할 함수 */
+  const handleStartVirtualTryOn = () => {
+    // '/virtual-tryon' 페이지로 '이동'하면서 'product' 데이터를 싣기
+    navigate('/virtual-tryon', { 
+      state: { 
+        product: product // ⭐️ 가상 피팅 페이지에 이 상품 정보를 넘겨줌
+      } 
+    });
+  };
+  
   // Scroll to top when component mounts or product changes
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [product.id]);
 
-  const sizes = ['XS', 'S', 'M', 'L', 'XL'];
+  const sizes = ["XS", "S", "M", "L", "XL"];
 
   // Product image gallery with model photos and product shots
-  const productImages = product.id === 2 
-    ? [
-        { url: suitModelFront, type: 'model', alt: '모델 착용 앞모습' },
-        { url: suitModelBack, type: 'model', alt: '모델 착용 뒷모습' },
-        { url: suitProductFront, type: 'product', alt: '상품 단독 앞' },
-        { url: suitProductBack, type: 'product', alt: '상품 단독 뒤' },
-      ]
-    : product.id === 1
-    ? [
-        { url: coatImage, type: 'model', alt: '모델 착용' },
-        { url: coatModelBack, type: 'model', alt: '모델 착용 뒷모습' },
-        { url: coatProductFront, type: 'product', alt: '상품 단독 앞' },
-        { url: coatProductBack, type: 'product', alt: '상품 단독 뒤' },
-      ]
-    : product.id === 11
-    ? [
-        { url: jacketImage, type: 'model', alt: '모델 착용 앞모습' },
-        { url: jacketModelBack, type: 'model', alt: '모델 착용 뒷모습' },
-        { url: jacketProductFront, type: 'product', alt: '상품 단독 앞' },
-        { url: jacketProductBack, type: 'product', alt: '상품 단독 뒤' },
-      ]
-    : product.id === 10
-    ? [
-        { url: product.image, type: 'model', alt: '모델 착용 앞모습' },
-        { url: shirtImage, type: 'model', alt: '모델 착용 뒷모습' },
-        { url: shirtProductFront, type: 'product', alt: '상품 단독 앞' },
-        { url: shirtProductBack, type: 'product', alt: '상품 단독 뒤' },
-      ]
-    : product.id === 3
-    ? [
-        { url: product.image, type: 'model', alt: '모델 착용 앞모습' },
-        { url: dressModelBack, type: 'model', alt: '모델 착용 옆모습' },
-        { url: dressProductFront, type: 'product', alt: '상품 단독 앞' },
-        { url: dressProductBack, type: 'product', alt: '상품 단독 뒤' },
-      ]
-    : product.id === 4
-    ? [
-        { url: product.image, type: 'model', alt: '��델 착용 앞모습' },
-        { url: sweaterModelSide, type: 'model', alt: '모델 착용 사이드' },
-        { url: sweaterProductFront, type: 'product', alt: '상품 단독 앞' },
-        { url: sweaterProductBack, type: 'product', alt: '상품 단독 뒤' },
-      ]
-    : product.id === 5
-    ? [
-        { url: product.image, type: 'model', alt: '모델 착용 앞모습' },
-        { url: trenchModelSide, type: 'model', alt: '모델 착용 사이드' },
-        { url: trenchProductFront, type: 'product', alt: '상품 단독 앞' },
-        { url: trenchProductBack, type: 'product', alt: '상품 단독 뒤' },
-      ]
-    : [
-        { url: product.image, type: 'model', alt: '모델 착용' },
-        { url: 'https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=800', type: 'detail', alt: '상품 상세' },
-        { url: 'https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=800', type: 'model', alt: '모델 착용 2' },
-        { url: 'https://images.unsplash.com/photo-1562157873-818bc0726f68?w=800', type: 'product', alt: '단독 상품' },
-      ];
+  const productImages =
+    product.id === 2
+      ? [
+          { url: suitModelFront, type: "model", alt: "모델 착용 앞모습" },
+          { url: suitModelBack, type: "model", alt: "모델 착용 뒷모습" },
+          { url: suitProductFront, type: "product", alt: "상품 단독 앞" },
+          { url: suitProductBack, type: "product", alt: "상품 단독 뒤" },
+        ]
+      : product.id === 1
+      ? [
+          { url: coatImage, type: "model", alt: "모델 착용" },
+          { url: coatModelBack, type: "model", alt: "모델 착용 뒷모습" },
+          { url: coatProductFront, type: "product", alt: "상품 단독 앞" },
+          { url: coatProductBack, type: "product", alt: "상품 단독 뒤" },
+        ]
+      : product.id === 11
+      ? [
+          { url: jacketImage, type: "model", alt: "모델 착용 앞모습" },
+          { url: jacketModelBack, type: "model", alt: "모델 착용 뒷모습" },
+          { url: jacketProductFront, type: "product", alt: "상품 단독 앞" },
+          { url: jacketProductBack, type: "product", alt: "상품 단독 뒤" },
+        ]
+      : product.id === 10
+      ? [
+          { url: product.image, type: "model", alt: "모델 착용 앞모습" },
+          { url: shirtImage, type: "model", alt: "모델 착용 뒷모습" },
+          { url: shirtProductFront, type: "product", alt: "상품 단독 앞" },
+          { url: shirtProductBack, type: "product", alt: "상품 단독 뒤" },
+        ]
+      : product.id === 3
+      ? [
+          { url: product.image, type: "model", alt: "모델 착용 앞모습" },
+          { url: dressModelBack, type: "model", alt: "모델 착용 옆모습" },
+          { url: dressProductFront, type: "product", alt: "상품 단독 앞" },
+          { url: dressProductBack, type: "product", alt: "상품 단독 뒤" },
+        ]
+      : product.id === 4
+      ? [
+          { url: product.image, type: "model", alt: "��델 착용 앞모습" },
+          { url: sweaterModelSide, type: "model", alt: "모델 착용 사이드" },
+          { url: sweaterProductFront, type: "product", alt: "상품 단독 앞" },
+          { url: sweaterProductBack, type: "product", alt: "상품 단독 뒤" },
+        ]
+      : product.id === 5
+      ? [
+          { url: product.image, type: "model", alt: "모델 착용 앞모습" },
+          { url: trenchModelSide, type: "model", alt: "모델 착용 사이드" },
+          { url: trenchProductFront, type: "product", alt: "상품 단독 앞" },
+          { url: trenchProductBack, type: "product", alt: "상품 단독 뒤" },
+        ]
+      : [
+          { url: product.image, type: "model", alt: "모델 착용" },
+          {
+            url: "https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=800",
+            type: "detail",
+            alt: "상품 상세",
+          },
+          {
+            url: "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=800",
+            type: "model",
+            alt: "모델 착용 2",
+          },
+          {
+            url: "https://images.unsplash.com/photo-1562157873-818bc0726f68?w=800",
+            type: "product",
+            alt: "단독 상품",
+          },
+        ];
 
   // Size specifications table
   const sizeSpecs = {
@@ -156,15 +244,21 @@ export function ProductDetailPage({ product, onBack, onStartAIFitting, onStartVi
   // Use product-specific reviews if available, otherwise use default
   const reviews: Review[] = product.reviewsList || [];
   const aiSummary: AiSummary = product.aiReviewSummary || {
-    overall: '전체 리뷰의 95%가 긍정적이며, 특히 "사이즈 정확도"와 "품질"에 대한 만족도가 높습니다.',
-    pros: ['정확한 사이즈 매칭', '우수한 원단 품질', '세련된 디자인', '빠른 배송'],
-    cons: ['일부 배송 지연 발생'],
+    overall:
+      '전체 리뷰의 95%가 긍정적이며, 특히 "사이즈 정확도"와 "품질"에 대한 만족도가 높습니다.',
+    pros: [
+      "정확한 사이즈 매칭",
+      "우수한 원단 품질",
+      "세련된 디자인",
+      "빠른 배송",
+    ],
+    cons: ["일부 배송 지연 발생"],
     sizeAccuracy: 98,
   };
 
   const handleAddToCart = () => {
     if (!selectedSize) {
-      toast.error('사이즈를 선택해주세요');
+      toast.error("사이즈를 선택해주세요");
       return;
     }
 
@@ -183,12 +277,12 @@ export function ProductDetailPage({ product, onBack, onStartAIFitting, onStartVi
 
   const handleBuyNow = () => {
     if (!selectedSize) {
-      toast.error('사이즈를 선택해주세요');
+      toast.error("사이즈를 선택해주세요");
       return;
     }
 
     handleAddToCart();
-    toast.success('주문이 완료되었습니다!');
+    toast.success("주문이 완료되었습니다!");
   };
 
   return (
@@ -199,13 +293,13 @@ export function ProductDetailPage({ product, onBack, onStartAIFitting, onStartVi
           <div className="flex items-center justify-between gap-4">
             {/* Back Button */}
             <button
-              onClick={onBack}
+              onClick={handleBack}
               className="flex items-center gap-2 text-gray-600 hover:text-primary transition-colors whitespace-nowrap"
             >
               <ArrowLeft className="w-5 h-5" />
               <span className="hidden sm:inline">상품 목록으로</span>
             </button>
-            
+
             {/* Right Side: Search & Cart */}
             <div className="flex items-center gap-2">
               {searchExpanded ? (
@@ -223,19 +317,21 @@ export function ProductDetailPage({ product, onBack, onStartAIFitting, onStartVi
                       }}
                     />
                   </div>
-                  {onOpenImageSearch && (
-                    <button
-                      onMouseDown={(e: React.MouseEvent) => {
-                        e.preventDefault(); // Prevent input blur
-                        onOpenImageSearch();
-                        setSearchExpanded(false);
-                      }}
-                      className="p-2.5 bg-gray-50 hover:bg-accent/10 rounded-full border border-gray-200 hover:border-accent transition-all group"
-                      title="이미지로 검색"
-                    >
-                      <Image className="w-5 h-5 text-gray-600 group-hover:text-accent transition-colors" />
-                    </button>
-                  )}
+                  <button
+                    onMouseDown={(e: React.MouseEvent) => {
+                      e.preventDefault(); // (이건 좋은 코드니까 냅두자)
+
+                      // ⭐️ 1. '유령' 대신 '진짜' state 변경 함수 호출
+                      setImageSearchOpen(true);
+
+                      // ⭐️ 2. (setSearchExpanded는 아마 없으니 일단 주석 처리)
+                      // setSearchExpanded(false);
+                    }}
+                    className="p-2.5 bg-gray-50 hover:bg-accent/10 rounded-full border border-gray-200 hover:border-accent transition-all group"
+                    title="이미지로 검색"
+                  >
+                    <Image className="w-5 h-5 text-gray-600 group-hover:text-accent transition-colors" />
+                  </button>
                 </div>
               ) : (
                 <button
@@ -246,11 +342,11 @@ export function ProductDetailPage({ product, onBack, onStartAIFitting, onStartVi
                   <Search className="w-5 h-5 text-gray-600" />
                 </button>
               )}
-              
+
               {/* Cart Button */}
-              {onOpenCart && (
+              
                 <button
-                  onClick={onOpenCart}
+                  onClick={handleOpenCart}
                   className="relative p-2 hover:bg-gray-100 rounded-full transition-colors"
                   aria-label="장바구니"
                 >
@@ -261,7 +357,7 @@ export function ProductDetailPage({ product, onBack, onStartAIFitting, onStartVi
                     </span>
                   )}
                 </button>
-              )}
+            
             </div>
           </div>
         </div>
@@ -288,28 +384,36 @@ export function ProductDetailPage({ product, onBack, onStartAIFitting, onStartVi
               <div className="absolute bottom-6 left-6 bg-black/60 backdrop-blur-sm text-white px-3 py-1.5 rounded-full text-xs">
                 {productImages[selectedImage].alt}
               </div>
-              
+
               {/* Navigation Arrows */}
               {productImages.length > 1 && (
                 <>
                   {/* Previous Button */}
                   <button
-                    onClick={() => setSelectedImage((prev) => (prev === 0 ? productImages.length - 1 : prev - 1))}
+                    onClick={() =>
+                      setSelectedImage((prev) =>
+                        prev === 0 ? productImages.length - 1 : prev - 1
+                      )
+                    }
                     className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-primary p-3 rounded-full shadow-lg transition-all opacity-0 group-hover:opacity-100"
                     aria-label="이전 이미지"
                   >
                     <ChevronLeft className="w-6 h-6" />
                   </button>
-                  
+
                   {/* Next Button */}
                   <button
-                    onClick={() => setSelectedImage((prev) => (prev === productImages.length - 1 ? 0 : prev + 1))}
+                    onClick={() =>
+                      setSelectedImage((prev) =>
+                        prev === productImages.length - 1 ? 0 : prev + 1
+                      )
+                    }
                     className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-primary p-3 rounded-full shadow-lg transition-all opacity-0 group-hover:opacity-100"
                     aria-label="다음 이미지"
                   >
                     <ChevronRight className="w-6 h-6" />
                   </button>
-                  
+
                   {/* Image Counter */}
                   <div className="absolute top-6 left-6 bg-black/60 backdrop-blur-sm text-white px-3 py-1.5 rounded-full text-xs">
                     {selectedImage + 1} / {productImages.length}
@@ -326,8 +430,8 @@ export function ProductDetailPage({ product, onBack, onStartAIFitting, onStartVi
                   onClick={() => setSelectedImage(index)}
                   className={`relative rounded-xl overflow-hidden aspect-[3/4] bg-gray-50 transition-all ${
                     selectedImage === index
-                      ? 'ring-2 ring-accent'
-                      : 'opacity-60 hover:opacity-100'
+                      ? "ring-2 ring-accent"
+                      : "opacity-60 hover:opacity-100"
                   }`}
                 >
                   <ImageWithFallback
@@ -346,7 +450,9 @@ export function ProductDetailPage({ product, onBack, onStartAIFitting, onStartVi
             <div className="space-y-4">
               <div className="inline-flex items-center gap-2 bg-accent/10 px-4 py-2 rounded-full">
                 <Sparkles className="w-4 h-4 text-accent" />
-                <span className="text-sm text-primary">AI 매칭도 {product.aiMatch}%</span>
+                <span className="text-sm text-primary">
+                  AI 매칭도 {product.aiMatch}%
+                </span>
               </div>
 
               <div>
@@ -362,8 +468,8 @@ export function ProductDetailPage({ product, onBack, onStartAIFitting, onStartVi
                       key={i}
                       className={`w-5 h-5 ${
                         i < Math.floor(product.rating)
-                          ? 'fill-accent text-accent'
-                          : 'text-gray-300'
+                          ? "fill-accent text-accent"
+                          : "text-gray-300"
                       }`}
                     />
                   ))}
@@ -375,14 +481,19 @@ export function ProductDetailPage({ product, onBack, onStartAIFitting, onStartVi
 
               {/* Price */}
               <div className="flex items-center gap-3 pt-4 border-t">
-                <span className="text-3xl text-primary">{product.price.toLocaleString()}원</span>
+                <span className="text-3xl text-primary">
+                  {product.price.toLocaleString()}원
+                </span>
                 {product.originalPrice && (
                   <>
                     <span className="text-lg text-gray-400 line-through">
                       {product.originalPrice.toLocaleString()}원
                     </span>
                     <span className="text-sm text-red-500 bg-red-50 px-3 py-1 rounded-full">
-                      {Math.round((1 - product.price / product.originalPrice) * 100)}% OFF
+                      {Math.round(
+                        (1 - product.price / product.originalPrice) * 100
+                      )}
+                      % OFF
                     </span>
                   </>
                 )}
@@ -399,14 +510,14 @@ export function ProductDetailPage({ product, onBack, onStartAIFitting, onStartVi
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <button
-                    onClick={onStartAIFitting}
+                    onClick={handleStartAIFitting}
                     className="bg-gradient-to-r from-accent to-primary hover:opacity-90 text-white py-3 px-4 rounded-xl transition-all flex flex-col items-center gap-2 shadow-md hover:shadow-lg"
                   >
                     <Ruler className="w-5 h-5" />
                     <span className="text-xs">AI 사이즈 추천</span>
                   </button>
                   <button
-                    onClick={onStartVirtualTryOn}
+                    onClick={handleStartVirtualTryOn}
                     className="bg-gradient-to-r from-primary to-accent hover:opacity-90 text-white py-3 px-4 rounded-xl transition-all flex flex-col items-center gap-2 shadow-md hover:shadow-lg"
                   >
                     <Shirt className="w-5 h-5" />
@@ -420,7 +531,9 @@ export function ProductDetailPage({ product, onBack, onStartAIFitting, onStartVi
 
               {/* Size Selection */}
               <div className="pt-4 border-t">
-                <label className="block text-sm text-gray-600 mb-3">사이즈 선택</label>
+                <label className="block text-sm text-gray-600 mb-3">
+                  사이즈 선택
+                </label>
                 <div className="grid grid-cols-5 gap-2">
                   {sizes.map((size) => (
                     <button
@@ -428,8 +541,8 @@ export function ProductDetailPage({ product, onBack, onStartAIFitting, onStartVi
                       onClick={() => setSelectedSize(size)}
                       className={`py-3 rounded-xl border-2 transition-all flex items-center justify-center ${
                         selectedSize === size
-                          ? 'border-accent bg-accent text-white'
-                          : 'border-gray-200 bg-white hover:border-accent'
+                          ? "border-accent bg-accent text-white"
+                          : "border-gray-200 bg-white hover:border-accent"
                       }`}
                     >
                       {size}
@@ -516,41 +629,41 @@ export function ProductDetailPage({ product, onBack, onStartAIFitting, onStartVi
           {/* Tab Navigation */}
           <div className="flex gap-2 mb-8 border-b border-gray-200">
             <button
-              onClick={() => setActiveTab('description')}
+              onClick={() => setActiveTab("description")}
               className={`pb-4 px-6 transition-all relative ${
-                activeTab === 'description'
-                  ? 'text-accent'
-                  : 'text-gray-500 hover:text-gray-700'
+                activeTab === "description"
+                  ? "text-accent"
+                  : "text-gray-500 hover:text-gray-700"
               }`}
             >
               <span>상품 설명</span>
-              {activeTab === 'description' && (
+              {activeTab === "description" && (
                 <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-accent"></div>
               )}
             </button>
             <button
-              onClick={() => setActiveTab('size')}
+              onClick={() => setActiveTab("size")}
               className={`pb-4 px-6 transition-all relative ${
-                activeTab === 'size'
-                  ? 'text-accent'
-                  : 'text-gray-500 hover:text-gray-700'
+                activeTab === "size"
+                  ? "text-accent"
+                  : "text-gray-500 hover:text-gray-700"
               }`}
             >
               <span>사이즈 정보</span>
-              {activeTab === 'size' && (
+              {activeTab === "size" && (
                 <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-accent"></div>
               )}
             </button>
             <button
-              onClick={() => setActiveTab('delivery')}
+              onClick={() => setActiveTab("delivery")}
               className={`pb-4 px-6 transition-all relative ${
-                activeTab === 'delivery'
-                  ? 'text-accent'
-                  : 'text-gray-500 hover:text-gray-700'
+                activeTab === "delivery"
+                  ? "text-accent"
+                  : "text-gray-500 hover:text-gray-700"
               }`}
             >
               <span>배송/반품</span>
-              {activeTab === 'delivery' && (
+              {activeTab === "delivery" && (
                 <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-accent"></div>
               )}
             </button>
@@ -559,23 +672,29 @@ export function ProductDetailPage({ product, onBack, onStartAIFitting, onStartVi
           {/* Tab Content */}
           <div className="py-8">
             {/* Description Tab */}
-            {activeTab === 'description' && (
+            {activeTab === "description" && (
               <div className="space-y-6">
                 <div className="prose max-w-none">
                   <h3 className="text-2xl text-primary mb-4">제품 상세</h3>
                   <p className="text-gray-700 leading-relaxed mb-4">
-                    {product.name}은(는) 최고급 원단과 정교한 봉제 기술로 제작되었습니다. 
-                    일상 속에서도 편안함과 스타일을 동시에 추구하는 현대인을 위한 디자인으로, 
-                    어떤 상황에서도 당신의 개성을 돋보이게 합니다.
+                    {product.name}은(는) 최고급 원단과 정교한 봉제 기술로
+                    제작되었습니다. 일상 속에서도 편안함과 스타일을 동시에
+                    추구하는 현대인을 위한 디자인으로, 어떤 상황에서도 당신의
+                    개성을 돋보이게 합니다.
                   </p>
                   <ul className="space-y-2 text-gray-700">
                     <li className="flex items-start gap-2">
                       <span className="text-accent mt-1">•</span>
-                      <span>프리미엄 소재를 사용하여 부드러운 착용감과 내구성을 보장합니다</span>
+                      <span>
+                        프리미엄 소재를 사용하여 부드러운 착용감과 내구성을
+                        보장합니다
+                      </span>
                     </li>
                     <li className="flex items-start gap-2">
                       <span className="text-accent mt-1">•</span>
-                      <span>세련된 실루엣으로 다양한 스타일링이 가능합니다</span>
+                      <span>
+                        세련된 실루엣으로 다양한 스타일링이 가능합니다
+                      </span>
                     </li>
                     <li className="flex items-start gap-2">
                       <span className="text-accent mt-1">•</span>
@@ -613,12 +732,13 @@ export function ProductDetailPage({ product, onBack, onStartAIFitting, onStartVi
             )}
 
             {/* Size Tab */}
-            {activeTab === 'size' && (
+            {activeTab === "size" && (
               <div className="space-y-8">
                 <div>
                   <h3 className="text-2xl text-primary mb-4">사이즈 가이드</h3>
                   <p className="text-gray-600 mb-6">
-                    모든 치수는 cm 단위이며, 제품에 따라 ±1~2cm의 오차가 있을 수 있습니다.
+                    모든 치수는 cm 단위이며, 제품에 따라 ±1~2cm의 오차가 있을 수
+                    있습니다.
                   </p>
                 </div>
 
@@ -627,11 +747,21 @@ export function ProductDetailPage({ product, onBack, onStartAIFitting, onStartVi
                   <table className="w-full border-collapse">
                     <thead>
                       <tr className="bg-gray-50">
-                        <th className="px-6 py-4 text-left text-primary border-b-2 border-gray-200">사이즈</th>
-                        <th className="px-6 py-4 text-center text-primary border-b-2 border-gray-200">가슴둘레</th>
-                        <th className="px-6 py-4 text-center text-primary border-b-2 border-gray-200">어깨너비</th>
-                        <th className="px-6 py-4 text-center text-primary border-b-2 border-gray-200">총장</th>
-                        <th className="px-6 py-4 text-center text-primary border-b-2 border-gray-200">소매길이</th>
+                        <th className="px-6 py-4 text-left text-primary border-b-2 border-gray-200">
+                          사이즈
+                        </th>
+                        <th className="px-6 py-4 text-center text-primary border-b-2 border-gray-200">
+                          가슴둘레
+                        </th>
+                        <th className="px-6 py-4 text-center text-primary border-b-2 border-gray-200">
+                          어깨너비
+                        </th>
+                        <th className="px-6 py-4 text-center text-primary border-b-2 border-gray-200">
+                          총장
+                        </th>
+                        <th className="px-6 py-4 text-center text-primary border-b-2 border-gray-200">
+                          소매길이
+                        </th>
                       </tr>
                     </thead>
                     <tbody>
@@ -639,11 +769,17 @@ export function ProductDetailPage({ product, onBack, onStartAIFitting, onStartVi
                         <tr
                           key={size}
                           className={`hover:bg-gray-50 transition-colors ${
-                            selectedSize === size ? 'bg-accent/10' : ''
+                            selectedSize === size ? "bg-accent/10" : ""
                           }`}
                         >
                           <td className="px-6 py-4 border-b border-gray-200">
-                            <span className={`${selectedSize === size ? 'text-accent' : 'text-primary'}`}>
+                            <span
+                              className={`${
+                                selectedSize === size
+                                  ? "text-accent"
+                                  : "text-primary"
+                              }`}
+                            >
                               {size}
                             </span>
                           </td>
@@ -675,7 +811,9 @@ export function ProductDetailPage({ product, onBack, onStartAIFitting, onStartVi
                       </div>
                       <div>
                         <p className="text-primary mb-1">가슴둘레</p>
-                        <p className="text-gray-600">겨드랑이 아래 가장 넓은 부분</p>
+                        <p className="text-gray-600">
+                          겨드랑이 아래 가장 넓은 부분
+                        </p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3">
@@ -684,7 +822,9 @@ export function ProductDetailPage({ product, onBack, onStartAIFitting, onStartVi
                       </div>
                       <div>
                         <p className="text-primary mb-1">어깨너비</p>
-                        <p className="text-gray-600">양쪽 어깨 끝점 사이의 거리</p>
+                        <p className="text-gray-600">
+                          양쪽 어깨 끝점 사이의 거리
+                        </p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3">
@@ -693,7 +833,9 @@ export function ProductDetailPage({ product, onBack, onStartAIFitting, onStartVi
                       </div>
                       <div>
                         <p className="text-primary mb-1">총장</p>
-                        <p className="text-gray-600">뒷목 중심부터 밑단까지의 길이</p>
+                        <p className="text-gray-600">
+                          뒷목 중심부터 밑단까지의 길이
+                        </p>
                       </div>
                     </div>
                     <div className="flex items-start gap-3">
@@ -702,7 +844,9 @@ export function ProductDetailPage({ product, onBack, onStartAIFitting, onStartVi
                       </div>
                       <div>
                         <p className="text-primary mb-1">소매길이</p>
-                        <p className="text-gray-600">어깨 끝에서 소매 끝까지의 길이</p>
+                        <p className="text-gray-600">
+                          어깨 끝에서 소매 끝까지의 길이
+                        </p>
                       </div>
                     </div>
                   </div>
@@ -716,7 +860,7 @@ export function ProductDetailPage({ product, onBack, onStartAIFitting, onStartVi
                     AI가 회원님의 체형을 분석하여 최적의 사이즈를 추천해드립니다
                   </p>
                   <button
-                    onClick={onStartAIFitting}
+                    onClick={handleStartAIFitting}
                     className="bg-primary hover:bg-accent text-white px-6 py-3 rounded-full transition-all inline-flex items-center gap-2"
                   >
                     <Ruler className="w-5 h-5" />
@@ -727,7 +871,7 @@ export function ProductDetailPage({ product, onBack, onStartAIFitting, onStartVi
             )}
 
             {/* Delivery Tab */}
-            {activeTab === 'delivery' && (
+            {activeTab === "delivery" && (
               <div className="space-y-8">
                 <div>
                   <h3 className="text-2xl text-primary mb-6">배송 정보</h3>
@@ -800,21 +944,32 @@ export function ProductDetailPage({ product, onBack, onStartAIFitting, onStartVi
                           <div className="w-10 h-10 bg-blue-500 text-white rounded-full flex items-center justify-center mx-auto mb-2">
                             1
                           </div>
-                          <p className="text-gray-700">마이페이지에서<br />반품 신청</p>
+                          <p className="text-gray-700">
+                            마이페이지에서
+                            <br />
+                            반품 신청
+                          </p>
                         </div>
                         <div className="text-gray-400">→</div>
                         <div className="flex-1 text-center">
                           <div className="w-10 h-10 bg-blue-500 text-white rounded-full flex items-center justify-center mx-auto mb-2">
                             2
                           </div>
-                          <p className="text-gray-700">택배사에<br />상품 인계</p>
+                          <p className="text-gray-700">
+                            택배사에
+                            <br />
+                            상품 인계
+                          </p>
                         </div>
                         <div className="text-gray-400">→</div>
                         <div className="flex-1 text-center">
                           <div className="w-10 h-10 bg-blue-500 text-white rounded-full flex items-center justify-center mx-auto mb-2">
                             3
                           </div>
-                          <p className="text-gray-700">검수 후<br />환불 진행</p>
+                          <p className="text-gray-700">
+                            검수 후<br />
+                            환불 진행
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -834,7 +989,7 @@ export function ProductDetailPage({ product, onBack, onStartAIFitting, onStartVi
               className="inline-flex items-center gap-2 bg-accent/10 hover:bg-accent/20 text-primary px-6 py-3 rounded-full transition-all"
             >
               <Sparkles className="w-5 h-5 text-accent" />
-              <span>AI 리뷰 요약 {showAISummary ? '닫기' : '보기'}</span>
+              <span>AI 리뷰 요약 {showAISummary ? "닫기" : "보기"}</span>
             </button>
           </div>
 
@@ -865,7 +1020,10 @@ export function ProductDetailPage({ product, onBack, onStartAIFitting, onStartVi
                   </div>
                   <ul className="space-y-2">
                     {aiSummary.pros.map((pro, index) => (
-                      <li key={index} className="flex items-center gap-2 text-sm text-gray-700">
+                      <li
+                        key={index}
+                        className="flex items-center gap-2 text-sm text-gray-700"
+                      >
                         <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
                         {pro}
                       </li>
@@ -881,7 +1039,10 @@ export function ProductDetailPage({ product, onBack, onStartAIFitting, onStartVi
                   </div>
                   <ul className="space-y-2">
                     {aiSummary.cons.map((con, index) => (
-                      <li key={index} className="flex items-center gap-2 text-sm text-gray-700">
+                      <li
+                        key={index}
+                        className="flex items-center gap-2 text-sm text-gray-700"
+                      >
                         <div className="w-1.5 h-1.5 rounded-full bg-orange-500"></div>
                         {con}
                       </li>
@@ -894,7 +1055,9 @@ export function ProductDetailPage({ product, onBack, onStartAIFitting, onStartVi
               <div className="bg-white rounded-2xl p-6">
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-primary">사이즈 정확도</span>
-                  <span className="text-2xl text-accent">{aiSummary.sizeAccuracy}%</span>
+                  <span className="text-2xl text-accent">
+                    {aiSummary.sizeAccuracy}%
+                  </span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
                   <div
@@ -923,8 +1086,8 @@ export function ProductDetailPage({ product, onBack, onStartAIFitting, onStartVi
                             key={i}
                             className={`w-4 h-4 ${
                               i < review.rating
-                                ? 'fill-accent text-accent'
-                                : 'text-gray-300'
+                                ? "fill-accent text-accent"
+                                : "text-gray-300"
                             }`}
                           />
                         ))}
@@ -935,7 +1098,9 @@ export function ProductDetailPage({ product, onBack, onStartAIFitting, onStartVi
                       <span>•</span>
                       <span>사이즈: {review.size}</span>
                       <span>•</span>
-                      <span>{review.height}cm, {review.weight}kg</span>
+                      <span>
+                        {review.height}cm, {review.weight}kg
+                      </span>
                     </div>
                   </div>
                 </div>
@@ -948,6 +1113,7 @@ export function ProductDetailPage({ product, onBack, onStartAIFitting, onStartVi
           </div>
         </div>
       </main>
+      <CartSheet open={cartOpen} onOpenChange={setCartOpen} />
     </div>
   );
 }

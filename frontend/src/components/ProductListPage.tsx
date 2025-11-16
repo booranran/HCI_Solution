@@ -8,6 +8,8 @@ import shirtImage from '../assets/shirts/shirts1.jpg';
 import dressImage from '../assets/dress/dress1.jpg';
 import sweaterImage from '../assets/sweater/sweater1.jpg';
 import trenchImage from '../assets/trench/trench1.jpg';
+import { useLocation, useNavigate } from "react-router-dom";
+
 
 interface Product {
   id: number;
@@ -25,13 +27,13 @@ interface Product {
   aiReviewSummary?: any;
 }
 
-interface ProductListPageProps {
-  category: string;
-  onBack: () => void;
-  onProductClick: (product: Product) => void;
-}
 
-export function ProductListPage({ category, onBack, onProductClick }: ProductListPageProps) {
+
+export function ProductListPage() {
+  const location = useLocation();
+  const navigate = useNavigate();
+
+  const category = location.state?.category || '전체';
   const [sortBy, setSortBy] = useState('ai-match');
   const [priceRange, setPriceRange] = useState('all');
 
@@ -354,6 +356,13 @@ export function ProductListPage({ category, onBack, onProductClick }: ProductLis
       sortedProducts = sortedProducts.filter(p => p.price >= 200000);
     }
   }
+  const handleBack = () => {
+    navigate(-1);
+  };
+
+  const handleProductClick = (product: Product) => {
+    navigate('/product-detail', { state: { product } });
+  };
 
   return (
     <div className="min-h-screen bg-white">
@@ -361,7 +370,7 @@ export function ProductListPage({ category, onBack, onProductClick }: ProductLis
       <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 py-5">
           <button
-            onClick={onBack}
+            onClick={handleBack}
             className="flex items-center gap-2 text-gray-600 hover:text-primary transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
@@ -414,7 +423,7 @@ export function ProductListPage({ category, onBack, onProductClick }: ProductLis
           {/* Price Range */}
           <select
             value={priceRange}
-            onChange={(e) => setPriceRange(e.target.value)}
+            onChange={(e) => setSortBy(e.target.value)}
             className="px-4 py-2 rounded-full border border-gray-200 bg-white focus:outline-none focus:border-accent transition-colors"
           >
             <option value="all">전체 가격</option>
@@ -429,7 +438,7 @@ export function ProductListPage({ category, onBack, onProductClick }: ProductLis
           {sortedProducts.map((product) => (
             <div
               key={product.id}
-              onClick={() => onProductClick(product)}
+              onClick={() => handleProductClick(product)}
               className="group bg-white rounded-2xl overflow-hidden border border-gray-100 hover:border-accent/30 transition-all duration-500 hover:shadow-xl cursor-pointer"
             >
               {/* Product Image */}
