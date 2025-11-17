@@ -2,33 +2,55 @@
   {
     "id": "shirt001",
     "name": "화이트 셔츠",
-    "image_path": "clothes/shirt.png",
-    "fit": "slim",
-    "color": "white",
-    "category": "UPPER_BODY_GARMENT",
+    "brand": "Maison Elite",
+    "price": "389000",
+    "originalPrice": null,
+    "image_path": "assets/blazer/blazer4.jpg",
+    "rating": 4.9,
+    "reviews": 89,
+    "aiMatch": 98,
+    "badge": "AI Pick",
+    "category": "남성 컬렉션",
+    "fit_type": "tops",
     "fabric": "polySpan",
-    "price": "₩39,000",
     "measurements": {
-      "shoulder": 46,
-      "chest": 100,
-      "sleeve": 62,
-      "length": 70
-    }
+      "S": { "shoulder": 44, "chest": 95, "sleeve": 60, "length": 70 },
+      "M": { "shoulder": 46, "chest": 100, "sleeve": 61, "length": 72 },
+      "L": { "shoulder": 48, "chest": 105, "sleeve": 62, "length": 74 },
+      "XL": { "shoulder": 50, "chest": 110, "sleeve": 63, "length": 76 }
+    },
+    "detail_images": [
+      { "path": "assets/blazer/blazer1.jpg", "type": "model", "alt": "앞모습" },
+      { "path": "assets/blazer/blazer3.jpg", "type": "model", "alt": "뒷모습" },
+      { "path": "assets/blazer/blazer4.jpg", "type": "product", "alt": "상세 앞" },
+      { "path": "assets/blazer/blazer5.jpg", "type": "product", "alt": "상세 뒤" }
+    ]
   },
   {
-    "id": "coat001",
-    "name": "블랙 코트",
-    "image_path": "clothes/cort1.png",
-    "fit": "oversize",
-    "color": "black",
-    "category": "UPPER_BODY_GARMENT",
-    "fabric": "denim",
-    "price": "₩69,000",
+    "id": "suit001",
+    "name": "프리미엄 테일러드 수트",
+    "brand": "Maison Elite",
+    "price": 389000,
+    "originalPrice": null,
+    "image_path": "assets/blazer/blazer4.jpg",
+    "rating": 4.9,
+    "reviews": 89,
+    "aiMatch": 98,
+    "badge": "AI Pick",
+    "category": "남성 컬렉션",
+    "fit_type": "tops",
+    "fabric": "polySpan",
     "measurements": {
-      "shoulder": 48,
-      "chest": 106,
-      "sleeve": 61,
-      "length": 68
-    }
+      "S": { "shoulder": 44, "chest": 95, "sleeve": 60, "length": 70 },
+      "M": { "shoulder": 46, "chest": 100, "sleeve": 61, "length": 72 },
+      "L": { "shoulder": 48, "chest": 105, "sleeve": 62, "length": 74 },
+      "XL": { "shoulder": 50, "chest": 110, "sleeve": 63, "length": 76 }
+    },
+    "detail_images": [
+      { "path": "assets/blazer/blazer1.jpg", "type": "model", "alt": "앞모습" },
+      { "path": "assets/blazer/blazer3.jpg", "type": "model", "alt": "뒷모습" },
+      { "path": "assets/blazer/blazer4.jpg", "type": "product", "alt": "상세 앞" },
+      { "path": "assets/blazer/blazer5.jpg", "type": "product", "alt": "상세 뒤" }
+    ]
   }
 ]

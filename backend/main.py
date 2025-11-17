@@ -20,10 +20,14 @@ CREDENTIAL_PATH = "backend/vertex-ai-key.json"
 credentials = service_account.Credentials.from_service_account_file(
     CREDENTIAL_PATH, scopes=["https://www.googleapis.com/auth/cloud-platform"]
 )
-auth_req = google.auth.transport.requests.Request()
-credentials.refresh(auth_req)
-ACCESS_TOKEN = credentials.token
 
+def get_access_token():
+    credentials = service_account.Credentials.from_service_account_file(
+        CREDENTIAL_PATH, scopes=["https://www.googleapis.com/auth/cloud-platform"]
+    )
+    auth_req = google.auth.transport.requests.Request()
+    credentials.refresh(auth_req)
+    return credentials.token
 
 app = FastAPI(title="Fittory Prototype API")
 
@@ -36,7 +40,7 @@ async def show_routes():
 # CORS 설정 (테스트용 전체 허용)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://127.0.0.1:5500"],
+    allow_origins=["http://localhost:3000"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -160,8 +164,10 @@ async def generate(file: UploadFile = File(...), cloth_id: str = Form(...)):
     cloth_b64 = base64.b64encode(cloth_img).decode("utf-8")
 
     # ✅ 6️⃣ Vertex AI (VTO) 요청 준비
+    current_token = get_access_token()
+    
     headers = {
-        "Authorization": f"Bearer {ACCESS_TOKEN}",
+        "Authorization": f"Bearer {current_token}", # ⭐️ 변수 교체 (ACCESS_TOKEN -> current_token)
         "Content-Type": "application/json",
     }
 

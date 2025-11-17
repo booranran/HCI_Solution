@@ -1,124 +1,32 @@
-import { useState, useRef } from 'react';
-import { ArrowLeft, Upload, Camera, X, Sparkles, CheckCircle2 } from 'lucide-react';
-import { ImageWithFallback } from './figma/ImageWithFallback';
-import { toast } from 'sonner';
+import { useState, useRef } from "react";
+import {
+  ArrowLeft,
+  Upload,
+  Camera,
+  X,
+  Sparkles,
+  CheckCircle2,
+} from "lucide-react";
+import { ImageWithFallback } from "./figma/ImageWithFallback";
+import { toast } from "sonner";
 import { useLocation, useNavigate } from "react-router-dom";
-
+import { useVirtualTryOnLogic } from "../utils/useVirtualTryOnLogic"; // ⭐️ 훅 import
 
 export function VirtualTryOnPage() {
+  const {
+    product,
+    userImage,
+    processing,
+    isDragging,
+    fileInputRef,
+    handleBack,
+    handleFileChange,
+    handleDragOver,
+    handleDragLeave,
+    handleDrop,
+  } = useVirtualTryOnLogic();
 
-  const location = useLocation();
-  const navigate = useNavigate();
-
-  const [step, setStep] = useState(1);
-  const [userImage, setUserImage] = useState<string | null>(null);
-  const [resultImage, setResultImage] = useState<string | null>(null);
-  const [processing, setProcessing] = useState(false);
-  const [isDragging, setIsDragging] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const product = location.state?.product;
-
-  const handleBack = () => {
-    navigate(-1); // 그냥 '뒤로 가기'
-    // navigate('/product-detail', { state: { product: product } }); // 또는 상세 페이지로
-  };
-
-  if (!product) {
-    return (
-      <div>
-        <p>상품 정보가 없습니다.</p>
-        <button onClick={handleBack}>뒤로가기</button>
-      </div>
-    );
-  }
-
-
-
-  const handleFileSelect = (file: File) => {
-    if (file && file.type.startsWith('image/')) {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        setUserImage(e.target?.result as string);
-        toast.success('사진이 업로드되었습니다');
-        setStep(2);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      handleFileSelect(file);
-    }
-  };
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(true);
-  };
-
-  const handleDragLeave = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-    const file = e.dataTransfer.files?.[0];
-    if (file) {
-      handleFileSelect(file);
-    }
-  };
-
-  const handleTryOn = async () => {
-    setProcessing(true);
-    
-    // TODO: Replace with actual Virtual Try-On API call
-    // Example API integration structure:
-    /*
-    try {
-      const formData = new FormData();
-      if (fileInputRef.current?.files?.[0]) {
-        formData.append('user_image', fileInputRef.current.files[0]);
-      }
-      formData.append('product_image', product.image);
-      formData.append('product_id', product.id);
-
-      const response = await fetch('YOUR_VIRTUAL_TRYON_API_ENDPOINT', {
-        method: 'POST',
-        headers: {
-          'Authorization': 'Bearer YOUR_API_KEY',
-        },
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error('Virtual Try-On API failed');
-      }
-
-      const data = await response.json();
-      setResultImage(data.result_image_url);
-      setStep(3);
-      toast.success('가상 피팅이 완료되었습니다!');
-    } catch (error) {
-      toast.error('가상 피팅 중 오류가 발생했습니다');
-      setProcessing(false);
-      return;
-    }
-    */
-
-    // Simulate processing (remove this when implementing real API)
-    setTimeout(() => {
-      // For demo, use the user's image as result
-      setResultImage(userImage);
-      setProcessing(false);
-      setStep(3);
-      toast.success('가상 피팅이 완료되었습니다!');
-    }, 3000);
-  };
+  // VirtualTryOnPage.tsx
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
@@ -144,16 +52,14 @@ export function VirtualTryOnPage() {
             <span className="text-sm text-accent">AI 가상 피팅</span>
           </div>
           <h1 className="text-4xl text-primary mb-4">가상으로 착용해보세요</h1>
-          <p className="text-gray-600">
-            회원님의 사진에 상품을 입혀드립니다
-          </p>
+          <p className="text-gray-600">회원님의 사진에 상품을 입혀드립니다</p>
         </div>
 
-        {/* Progress Steps */}
+        {/* Progress Steps (2단계로 단순화) */}
         <div className="flex justify-center items-center gap-4 mb-12">
           <div
             className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all ${
-              step >= 1 ? 'bg-accent text-white' : 'bg-gray-100 text-gray-400'
+              !processing ? "bg-accent text-white" : "bg-gray-100 text-gray-400" // ⭐️ 처리 중이 아니면 1단계 활성
             }`}
           >
             <span className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-sm">
@@ -164,59 +70,59 @@ export function VirtualTryOnPage() {
           <div className="w-8 h-0.5 bg-gray-200"></div>
           <div
             className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all ${
-              step >= 2 ? 'bg-accent text-white' : 'bg-gray-100 text-gray-400'
+              processing ? "bg-accent text-white" : "bg-gray-100 text-gray-400" // ⭐️ 처리 중이면 2단계 활성
             }`}
           >
             <span className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-sm">
               2
             </span>
-            <span className="text-sm">AI 처리</span>
-          </div>
-          <div className="w-8 h-0.5 bg-gray-200"></div>
-          <div
-            className={`flex items-center gap-2 px-4 py-2 rounded-full transition-all ${
-              step >= 3 ? 'bg-accent text-white' : 'bg-gray-100 text-gray-400'
-            }`}
-          >
-            <span className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center text-sm">
-              3
-            </span>
-            <span className="text-sm">결과 확인</span>
+            <span className="text-sm">AI 처리 완료</span>
           </div>
         </div>
 
-        {/* Step 1: Upload Photo */}
-        {step === 1 && (
-          <div className="bg-white rounded-3xl shadow-xl p-8">
-            {/* Product Preview */}
-            <div className="mb-8 text-center">
-              <p className="text-sm text-gray-600 mb-4">착용할 상품</p>
-              <div className="inline-block">
-                <div className="w-32 h-40 rounded-xl overflow-hidden border-2 border-gray-100">
-                  <ImageWithFallback
-                    src={product.image}
-                    alt={product.name}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-                <p className="text-sm text-primary mt-2">{product.name}</p>
+        {/* Main Content Area (Upload/Processing Logic) */}
+        {/* 이 div는 더 이상 step으로 조건부 렌더링되지 않음 */}
+        <div className="bg-white rounded-3xl shadow-xl p-8">
+          {/* Product Preview (유지) */}
+          <div className="mb-8 text-center">
+            <p className="text-sm text-gray-600 mb-4">착용할 상품</p>
+            <div className="inline-block">
+              <div className="w-32 h-40 rounded-xl overflow-hidden border-2 border-gray-100">
+                {/* ⭐️ Hook에서 가져온 product 사용 */}
+                <ImageWithFallback
+                  src={product.image}
+                  alt={product.name}
+                  className="w-full h-full object-cover"
+                />
               </div>
+              <p className="text-sm text-primary mt-2">{product.name}</p>
             </div>
+          </div>
 
+          {processing ? (
+            // ⭐️ Processing/Loading UI (처리 중일 때)
+            <div className="flex flex-col items-center justify-center p-12 h-96 bg-gray-50 rounded-2xl">
+              <div className="w-16 h-16 border-4 border-accent border-t-transparent rounded-full animate-spin mb-4"></div>
+              <h2 className="text-xl text-primary mb-2">AI 처리 중...</h2>
+              <p className="text-gray-600">
+                잠시만 기다려주세요 (약 30초 소요)
+              </p>
+            </div>
+          ) : (
+            // ⭐️ Upload UI (처리 중이 아닐 때)
             <div className="border-t pt-8">
               <h2 className="text-xl text-primary mb-4 text-center">
                 회원님의 전신 사진을 업로드하세요
               </h2>
-              
               <div
-                onDragOver={handleDragOver}
-                onDragLeave={handleDragLeave}
-                onDrop={handleDrop}
-                onClick={() => fileInputRef.current?.click()}
+                onDragOver={handleDragOver} // ⭐️ Hook 함수 사용
+                onDragLeave={handleDragLeave} // ⭐️ Hook 함수 사용
+                onDrop={handleDrop} // ⭐️ Hook 함수 사용
+                onClick={() => fileInputRef.current?.click()} // ⭐️ Hook Ref 사용
                 className={`border-2 border-dashed rounded-2xl p-12 text-center transition-all cursor-pointer ${
-                  isDragging
-                    ? 'border-accent bg-accent/5'
-                    : 'border-gray-300 hover:border-accent'
+                  isDragging // ⭐️ Hook State 사용
+                    ? "border-accent bg-accent/5"
+                    : "border-gray-300 hover:border-accent"
                 }`}
               >
                 <div className="flex flex-col items-center gap-4">
@@ -232,173 +138,27 @@ export function VirtualTryOnPage() {
                   </button>
                 </div>
                 <input
-                  ref={fileInputRef}
+                  ref={fileInputRef} // ⭐️ Hook Ref 사용
                   type="file"
                   accept="image/*"
-                  onChange={handleFileChange}
+                  onChange={handleFileChange} // ⭐️ Hook 함수 사용
                   className="hidden"
                 />
               </div>
             </div>
+          )}
 
-            <div className="mt-6 p-4 bg-blue-50 rounded-xl">
-              <p className="text-sm text-blue-800 mb-2">📸 사진 촬영 가이드</p>
-              <ul className="text-xs text-blue-600 space-y-1 ml-4">
-                <li>• 밝은 조명에서 전신이 나오도록 촬영하세요</li>
-                <li>• 단색 배경에서 촬영하면 더 정확합니다</li>
-                <li>• 정면을 바라보고 팔을 자연스럽게 내려주세요</li>
-                <li>• 몸에 밀착된 옷을 입고 촬영하면 더 자연스럽습니다</li>
-              </ul>
-            </div>
+          {/* Guide Tip (유지) */}
+          <div className="mt-6 p-4 bg-blue-50 rounded-xl">
+            <p className="text-sm text-blue-800 mb-2">📸 사진 촬영 가이드</p>
+            <ul className="text-xs text-blue-600 space-y-1 ml-4">
+              <li>• 밝은 조명에서 전신이 나오도록 촬영하세요</li>
+              <li>• 단색 배경에서 촬영하면 더 정확합니다</li>
+              <li>• 정면을 바라보고 팔을 자연스럽게 내려주세요</li>
+              <li>• 몸에 밀착된 옷을 입고 촬영하면 더 자연스럽습니다</li>
+            </ul>
           </div>
-        )}
-
-        {/* Step 2: Preview & Process */}
-        {step === 2 && userImage && (
-          <div className="bg-white rounded-3xl shadow-xl p-8">
-            <h2 className="text-2xl text-primary mb-6 text-center">
-              가상 피팅 준비 완료
-            </h2>
-
-            <div className="grid md:grid-cols-2 gap-6 mb-8">
-              {/* User Image */}
-              <div>
-                <p className="text-sm text-gray-600 mb-3 text-center">회원님의 사진</p>
-                <div className="relative aspect-[3/4] bg-gray-50 rounded-2xl overflow-hidden">
-                  <img
-                    src={userImage}
-                    alt="User"
-                    className="w-full h-full object-contain"
-                  />
-                  <button
-                    onClick={() => {
-                      setUserImage(null);
-                      setStep(1);
-                      if (fileInputRef.current) {
-                        fileInputRef.current.value = '';
-                      }
-                    }}
-                    className="absolute top-4 right-4 p-2 bg-white/90 hover:bg-white rounded-full shadow-lg transition-all"
-                  >
-                    <X className="w-5 h-5 text-gray-700" />
-                  </button>
-                </div>
-              </div>
-
-              {/* Product Image */}
-              <div>
-                <p className="text-sm text-gray-600 mb-3 text-center">착용할 상품</p>
-                <div className="aspect-[3/4] bg-gray-50 rounded-2xl overflow-hidden">
-                  <ImageWithFallback
-                    src={product.image}
-                    alt={product.name}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              </div>
-            </div>
-
-            <div className="flex items-center justify-center gap-2 mb-6 text-green-600 bg-green-50 py-3 rounded-xl">
-              <CheckCircle2 className="w-5 h-5" />
-              <span className="text-sm">사진이 준비되었습니다</span>
-            </div>
-
-            <button
-              onClick={handleTryOn}
-              disabled={processing}
-              className="w-full bg-primary hover:bg-accent text-white py-4 rounded-full transition-all hover:shadow-lg disabled:opacity-50 flex items-center justify-center gap-2"
-            >
-              {processing ? (
-                <>
-                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                  <span>AI 처리 중... (30초 소요)</span>
-                </>
-              ) : (
-                <>
-                  <Sparkles className="w-5 h-5" />
-                  <span>가상 피팅 시작하기</span>
-                </>
-              )}
-            </button>
-          </div>
-        )}
-
-        {/* Step 3: Results */}
-        {step === 3 && resultImage && (
-          <div className="space-y-6">
-            <div className="bg-gradient-to-br from-accent/10 to-primary/10 rounded-3xl p-8 text-center">
-              <div className="inline-flex items-center gap-2 bg-white px-5 py-2.5 rounded-full shadow-sm mb-6">
-                <Sparkles className="w-5 h-5 text-accent" />
-                <span className="text-sm text-primary">AI 처리 완료</span>
-              </div>
-              <h2 className="text-3xl text-primary mb-2">가상 피팅 결과</h2>
-              <p className="text-gray-600">AI가 상품을 착용시켰습니다</p>
-            </div>
-
-            <div className="bg-white rounded-3xl shadow-xl p-8">
-              <div className="grid md:grid-cols-2 gap-6">
-                {/* Before */}
-                <div>
-                  <p className="text-sm text-gray-600 mb-3 text-center">원본</p>
-                  <div className="aspect-[3/4] bg-gray-50 rounded-2xl overflow-hidden">
-                    <img
-                      src={userImage!}
-                      alt="Before"
-                      className="w-full h-full object-contain"
-                    />
-                  </div>
-                </div>
-
-                {/* After */}
-                <div>
-                  <p className="text-sm text-gray-600 mb-3 text-center">가상 피팅 결과</p>
-                  <div className="aspect-[3/4] bg-gray-50 rounded-2xl overflow-hidden border-2 border-accent">
-                    <img
-                      src={resultImage}
-                      alt="After"
-                      className="w-full h-full object-contain"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-6 p-4 bg-accent/10 rounded-xl text-center">
-                <p className="text-sm text-primary">
-                  💡 이 결과는 AI 기술을 통해 생성된 시뮬레이션입니다. 
-                  실제 착용 모습과 다를 수 있습니다.
-                </p>
-              </div>
-            </div>
-
-            {/* API Integration Info */}
-            <div className="bg-blue-50 rounded-2xl p-6 border border-blue-100">
-              <h4 className="text-sm text-blue-900 mb-2">🔌 API 연동 준비 완료</h4>
-              <p className="text-xs text-blue-700">
-                이 페이지는 실제 Virtual Try-On API와 연동할 수 있도록 구조화되어 있습니다. 
-                VirtualTryOnPage.tsx 파일의 handleTryOn 함수에서 주석 처리된 API 호출 코드를 확인하세요.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <button
-                onClick={() => {
-                  setStep(1);
-                  setUserImage(null);
-                  setResultImage(null);
-                }}
-                className="bg-white hover:bg-gray-100 text-primary py-4 rounded-full border-2 border-gray-200 transition-all text-center"
-              >
-                다시 시도하기
-              </button>
-              <button
-                onClick={handleBack}
-                className="bg-primary hover:bg-accent text-white py-4 rounded-full transition-all hover:shadow-lg text-center"
-              >
-                상품 페이지로
-              </button>
-            </div>
-          </div>
-        )}
+        </div>
       </main>
     </div>
   );

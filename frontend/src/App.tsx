@@ -1,28 +1,31 @@
-import { Hero } from './components/Hero';
-import { PromoBanner } from './components/PromoBanner';
-import { Categories } from './components/Categories';
-import { FeaturedProducts } from './components/FeaturedProducts';
-import { HowItWorks } from './components/HowItWorks';
-import { Benefits } from './components/Benefits';
-import { Testimonials } from './components/Testimonials';
-import { Footer } from './components/Footer';
-import { CartSheet } from './components/CartSheet';
-//import { AIFittingPage } from './components/AIFittingPage';
-import { VirtualTryOnPage } from './components/VirtualTryOnPage';
-import { ProductDetailPage } from './components/ProductDetailPage';
-import { ProductListPage } from './components/ProductListPage';
-import { ImageSearchModal } from './components/ImageSearchModal';
-import { CartProvider, useCart } from './components/CartContext';
-import { Search, ShoppingCart, User, Heart, Menu, Image } from 'lucide-react';
-import { useState } from 'react';
-import { Toaster } from './components/ui/sonner';
+import { Hero } from "./components/Hero";
+import { PromoBanner } from "./components/PromoBanner";
+import { Categories } from "./components/Categories";
+import { FeaturedProducts } from "./components/FeaturedProducts";
+import { HowItWorks } from "./components/HowItWorks";
+import { Benefits } from "./components/Benefits";
+import { Testimonials } from "./components/Testimonials";
+import { Footer } from "./components/Footer";
+import { CartSheet } from "./components/CartSheet";
+import { VirtualTryOnPage } from "./components/VirtualTryOnPage";
+import { ProductDetailPage } from "./components/ProductDetailPage";
+import { ProductListPage } from "./components/ProductListPage";
+import { ImageSearchModal } from "./components/ImageSearchModal";
+import { CartProvider, useCart } from "./components/CartContext";
+import { Search, ShoppingCart, User, Heart, Menu, Image } from "lucide-react";
+import { useState } from "react";
+import { Toaster } from "./components/ui/sonner";
+import VirtualTryOnResult from "./components/VirtualTryOnResult";
+import BodyCompare from "./components/BodyCompare";
+import BodyCompareResult from "./components/BodyCompare_Result";
+import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 
-import BodyCompare from './components/BodyCompare';
-import BodyCompareResult from './components/BodyCompare_Result';
-import { BrowserRouter, Routes, Route, useNavigate } from 'react-router-dom';
-
-
-type Page = 'home' | 'ai-fitting' | 'virtual-tryon' | 'product-detail' | 'product-list';
+type Page =
+  | "home"
+  | "ai-fitting"
+  | "virtual-tryon"
+  | "product-detail"
+  | "product-list";
 
 function HomePage() {
   const [cartOpen, setCartOpen] = useState(false);
@@ -33,18 +36,17 @@ function HomePage() {
   const navigate = useNavigate();
 
   const handleProductClick = (product: any) => {
-   navigate('/product-detail', { state: { product: product } });
+    navigate("/product-detail", { state: { product: product } });
   };
 
   const handleCategoryClick = (category: string) => {
-    navigate('/products', { state: { category: category } });
+    navigate("/products", { state: { category: category } });
   };
 
   const handleImageSearch = (imageFile: File) => {
     setImageSearchOpen(false);
-    navigate('/products', { state: { category: '이미지 검색 결과' } });
+    navigate("/products", { state: { category: "이미지 검색 결과" } });
   };
-
 
   return (
     <div className="min-h-screen bg-white">
@@ -53,9 +55,15 @@ function HomePage() {
         <div className="max-w-7xl mx-auto flex justify-between items-center text-xs tracking-wide">
           <p>✨ 신규 회원 첫 구매 시 20% 할인</p>
           <div className="flex gap-8">
-            <a href="#" className="hover:text-accent transition-colors">고객센터</a>
-            <a href="#" className="hover:text-accent transition-colors">주문조회</a>
-            <a href="#" className="hover:text-accent transition-colors">매장찾기</a>
+            <a href="#" className="hover:text-accent transition-colors">
+              고객센터
+            </a>
+            <a href="#" className="hover:text-accent transition-colors">
+              주문조회
+            </a>
+            <a href="#" className="hover:text-accent transition-colors">
+              매장찾기
+            </a>
           </div>
         </div>
       </div>
@@ -69,7 +77,7 @@ function HomePage() {
               <div className="w-9 h-9 bg-gradient-to-br from-accent to-primary rounded-xl shadow-sm"></div>
               <h1 className="text-2xl text-primary tracking-tight">Fitory</h1>
             </div>
-            
+
             {/* Search Bar */}
             <div className="hidden lg:flex flex-1 max-w-xl">
               <div className="relative w-full flex items-center gap-2">
@@ -93,22 +101,45 @@ function HomePage() {
 
             {/* Nav Links */}
             <div className="hidden md:flex items-center gap-8">
-              <a href="#new" className="text-sm text-gray-700 hover:text-primary transition-colors tracking-wide relative group">
+              {/* 1. 신상품 */}
+              <button
+                onClick={() => handleCategoryClick("신상품")}
+                className="text-sm text-gray-700 hover:text-primary transition-colors tracking-wide relative group"
+              >
                 신상품
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent group-hover:w-full transition-all"></span>
-              </a>
-              <a href="#women" className="text-sm text-gray-700 hover:text-primary transition-colors tracking-wide relative group">
+              </button>
+
+              {/* 2. 여성 (중요: DB에 '여성 컬렉션'이라고 저장돼 있으면 이렇게 보내야 함) */}
+              <button
+                onClick={() => handleCategoryClick("여성 컬렉션")}
+                className="text-sm text-gray-700 hover:text-primary transition-colors tracking-wide relative group"
+              >
                 여성
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent group-hover:w-full transition-all"></span>
-              </a>
-              <a href="#men" className="text-sm text-gray-700 hover:text-primary transition-colors tracking-wide relative group">
+                console.log("여성 컬렉션 클릭됨");
+              </button>
+
+              {/* 3. 남성 */}
+              <button
+                onClick={() => {
+                  handleCategoryClick("남성 컬렉션");
+                  console.log("남성 컬렉션 클릭됨");
+                }}
+                className="text-sm text-gray-700 hover:text-primary transition-colors tracking-wide relative group"
+              >
                 남성
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent group-hover:w-full transition-all"></span>
-              </a>
-              <a href="#sale" className="text-sm text-red-500 hover:text-red-600 transition-colors tracking-wide relative group">
+              </button>
+
+              {/* 4. 세일 */}
+              <button
+                onClick={() => handleCategoryClick("세일")}
+                className="text-sm text-red-500 hover:text-red-600 transition-colors tracking-wide relative group"
+              >
                 세일
                 <span className="absolute -bottom-1 left-0 w-0.5 bg-red-500 group-hover:w-full transition-all"></span>
-              </a>
+              </button>
             </div>
 
             {/* Action Icons */}
@@ -174,25 +205,22 @@ export default function App() {
       <BrowserRouter>
         {/* Toaster는 Routes 밖에 두면 모든 페이지에서 알림이 뜸 */}
         <Toaster />
-        
+
         <Routes>
           {/* ⭐️ Route 1: 홈페이지 ('/') */}
           <Route path="/" element={<HomePage />} />
-          
           {/* ⭐️ Route 2: 상품 목록 페이지 */}
           <Route path="/products" element={<ProductListPage />} />
-          
           {/* ⭐️ Route 3: 상품 상세 페이지 */}
           <Route path="/product-detail" element={<ProductDetailPage />} />
-          
           {/* ⭐️ Route 4: "우리가" 만든 AI 핏 비교 (폼) */}
           <Route path="/body-compare" element={<BodyCompare />} />
-          
           {/* ⭐️ Route 5: "우리가" 만든 AI 핏 비교 (결과) */}
           <Route path="/body-compare/result" element={<BodyCompareResult />} />
-                    
           {/* ⭐️ Route 6: 가상 피팅 (나중에 추가) */}
           {<Route path="/virtual-tryon" element={<VirtualTryOnPage />} />}
+          <Route path="/tryon/result" element={<VirtualTryOnResult />} /> // ⭐️
+          결과 페이지 등록
         </Routes>
       </BrowserRouter>
     </CartProvider>

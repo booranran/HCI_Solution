@@ -17,30 +17,6 @@ import {
 import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { useCart } from "./CartContext";
 import { toast } from "sonner";
-import suitModelFront from "../assets/blazer/blazer1.jpg";
-import suitModelBack from "../assets/blazer/blazer3.jpg";
-import suitProductFront from "../assets/blazer/blazer4.jpg";
-import suitProductBack from "../assets/blazer/blazer5.jpg";
-import coatImage from "../assets/coat/coat1.jpg";
-import coatModelBack from "../assets/coat/coat2.jpg";
-import coatProductFront from "../assets/coat/coat3.jpg";
-import coatProductBack from "../assets/coat/coat4.jpg";
-import jacketImage from "../assets/jakcet/jacket1.jpg";
-import jacketModelBack from "../assets/jakcet/jacket2.jpg";
-import jacketProductFront from "../assets/jakcet/jacket3.jpg";
-import jacketProductBack from "../assets/jakcet/jacket4.jpg";
-import shirtImage from "../assets/shirts/shirts2.jpg";
-import shirtProductFront from "../assets/shirts/shirts3.jpg";
-import shirtProductBack from "../assets/shirts/shirts4.jpg";
-import dressModelBack from "../assets/dress/dress2.jpg";
-import dressProductFront from "../assets/dress/dress3.jpg";
-import dressProductBack from "../assets/dress/dress4.jpg";
-import sweaterModelSide from "../assets/sweater/sweater2.jpg";
-import sweaterProductFront from "../assets/sweater/sweater3.jpg";
-import sweaterProductBack from "../assets/sweater/sweater4.jpg";
-import trenchModelSide from "../assets/trench/trench2.jpg";
-import trenchProductFront from "../assets/trench/trench3.jpg";
-import trenchProductBack from "../assets/trench/trench4.jpg";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ImageSearchModal } from "../components/ImageSearchModal";
 import { CartSheet } from "../components/CartSheet";
@@ -78,6 +54,8 @@ interface Product {
   badge: string;
   reviewsList?: Review[];
   aiReviewSummary?: AiSummary;
+  category: string;
+  fit_type: string;
 }
 
 export function ProductDetailPage() {
@@ -99,33 +77,36 @@ export function ProductDetailPage() {
     navigate(-1); // "그냥 뒤로 한 칸 가기"
   };
 
+  const handleBackToList = () => {
+    // ⭐️ 1. 주소는 '/products'
+    // ⭐️ 2. 'category'라는 이름표에 'product.category' 값을 담아서 보냄
+    navigate('/products', { 
+      state: { category: product.category } 
+    });
+  };
+  
   /** ⭐️ 'AI 사이즈 추천' 버튼을 눌렀을 때 실행할 함수 */
   const handleStartAIFitting = () => {
-    // 🚨 1. 'sizeSpecs' (상품 사이즈 정보)
-    // 걔가 하드코딩해놓은 'sizeSpecs' 변수(가짜 데이터)를 그대로 넘긴다
-    const productSizes = sizeSpecs;
-
-    // 🚨 2. 'category' (상의/하의)
-    // 걔가 'product.category'에 "남성 컬렉션" 이딴 걸 넣어놨으니,
-    // 이걸 'tops' / 'bottoms'로 우리가 '추측'해서 바꿔준다
-    let category: "tops" | "bottoms" = "tops"; // 기본값
-    if (
-      product.category.includes("팬츠") ||
-      product.category.includes("스커트")
-    ) {
-      category = "bottoms";
+    // 1. 사이즈 정보 (유지)
+    if (!product.measurements) {
+      toast.error("사이즈 정보가 없습니다.");
+      return;
     }
+    const productSizes = product.measurements;
 
-    // 🚨 3. 'fabric' (원단)
-    // 'product.fabric'이 없으면 임시로 'cotton'을 넘긴다
+    // ⭐️ 2. 카테고리 (추측 로직 삭제 -> fit_type 사용)
+    // JSON에 fit_type이 있으면 그걸 쓰고, 없으면 기본값 'tops'
+    const fitType = product.fit_type === "bottoms" ? "bottoms" : "tops";
+
+    // 3. 원단 (유지)
     const fabric = product.fabric || "cotton";
 
-    // ⭐️ 4. "진짜" 페이지 이동 (모든 데이터를 싣고!)
+    // 4. 이동 (유지)
     navigate("/body-compare", {
       state: {
-        productSizes: productSizes, // 1. 걔가 만든 가짜 사이즈표
-        category: category, // 2. 우리가 추측한 상/하의
-        fabric: fabric, // 3. 우리가 땜빵한 원단
+        productSizes: productSizes,
+        category: fitType, // 'tops' or 'bottoms'가 정확하게 들어감
+        fabric: fabric,
       },
     });
   };
@@ -148,13 +129,13 @@ export function ProductDetailPage() {
   /** ⭐️ '가상 피팅 체험' 버튼을 눌렀을 때 실행할 함수 */
   const handleStartVirtualTryOn = () => {
     // '/virtual-tryon' 페이지로 '이동'하면서 'product' 데이터를 싣기
-    navigate('/virtual-tryon', { 
-      state: { 
-        product: product // ⭐️ 가상 피팅 페이지에 이 상품 정보를 넘겨줌
-      } 
+    navigate("/virtual-tryon", {
+      state: {
+        product: product, // ⭐️ 가상 피팅 페이지에 이 상품 정보를 넘겨줌
+      },
     });
   };
-  
+
   // Scroll to top when component mounts or product changes
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -162,73 +143,22 @@ export function ProductDetailPage() {
 
   const sizes = ["XS", "S", "M", "L", "XL"];
 
-  // Product image gallery with model photos and product shots
+  // ✅ [추가] 백엔드 데이터(JSON)를 사용해서 이미지 목록 만들기
+  // (만약 JSON에 detail_images가 없으면, 그냥 메인 이미지를 1개 보여주는 '안전 장치' 포함)
   const productImages =
-    product.id === 2
-      ? [
-          { url: suitModelFront, type: "model", alt: "모델 착용 앞모습" },
-          { url: suitModelBack, type: "model", alt: "모델 착용 뒷모습" },
-          { url: suitProductFront, type: "product", alt: "상품 단독 앞" },
-          { url: suitProductBack, type: "product", alt: "상품 단독 뒤" },
-        ]
-      : product.id === 1
-      ? [
-          { url: coatImage, type: "model", alt: "모델 착용" },
-          { url: coatModelBack, type: "model", alt: "모델 착용 뒷모습" },
-          { url: coatProductFront, type: "product", alt: "상품 단독 앞" },
-          { url: coatProductBack, type: "product", alt: "상품 단독 뒤" },
-        ]
-      : product.id === 11
-      ? [
-          { url: jacketImage, type: "model", alt: "모델 착용 앞모습" },
-          { url: jacketModelBack, type: "model", alt: "모델 착용 뒷모습" },
-          { url: jacketProductFront, type: "product", alt: "상품 단독 앞" },
-          { url: jacketProductBack, type: "product", alt: "상품 단독 뒤" },
-        ]
-      : product.id === 10
-      ? [
-          { url: product.image, type: "model", alt: "모델 착용 앞모습" },
-          { url: shirtImage, type: "model", alt: "모델 착용 뒷모습" },
-          { url: shirtProductFront, type: "product", alt: "상품 단독 앞" },
-          { url: shirtProductBack, type: "product", alt: "상품 단독 뒤" },
-        ]
-      : product.id === 3
-      ? [
-          { url: product.image, type: "model", alt: "모델 착용 앞모습" },
-          { url: dressModelBack, type: "model", alt: "모델 착용 옆모습" },
-          { url: dressProductFront, type: "product", alt: "상품 단독 앞" },
-          { url: dressProductBack, type: "product", alt: "상품 단독 뒤" },
-        ]
-      : product.id === 4
-      ? [
-          { url: product.image, type: "model", alt: "��델 착용 앞모습" },
-          { url: sweaterModelSide, type: "model", alt: "모델 착용 사이드" },
-          { url: sweaterProductFront, type: "product", alt: "상품 단독 앞" },
-          { url: sweaterProductBack, type: "product", alt: "상품 단독 뒤" },
-        ]
-      : product.id === 5
-      ? [
-          { url: product.image, type: "model", alt: "모델 착용 앞모습" },
-          { url: trenchModelSide, type: "model", alt: "모델 착용 사이드" },
-          { url: trenchProductFront, type: "product", alt: "상품 단독 앞" },
-          { url: trenchProductBack, type: "product", alt: "상품 단독 뒤" },
-        ]
+    product.detail_images && product.detail_images.length > 0
+      ? product.detail_images.map((img: any) => ({
+          url: `http://localhost:8000/static/${img.path}`, // ⭐️ 백엔드 주소 조립
+          type: img.type,
+          alt: img.alt,
+        }))
       : [
-          { url: product.image, type: "model", alt: "모델 착용" },
+          // 데이터가 없을 때 보여줄 기본값 (메인 이미지)
           {
-            url: "https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=800",
-            type: "detail",
-            alt: "상품 상세",
-          },
-          {
-            url: "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=800",
-            type: "model",
-            alt: "모델 착용 2",
-          },
-          {
-            url: "https://images.unsplash.com/photo-1562157873-818bc0726f68?w=800",
+            url:
+              product.image || "http://localhost:8000/static/placeholder.jpg",
             type: "product",
-            alt: "단독 상품",
+            alt: "상품 이미지",
           },
         ];
 
@@ -293,7 +223,7 @@ export function ProductDetailPage() {
           <div className="flex items-center justify-between gap-4">
             {/* Back Button */}
             <button
-              onClick={handleBack}
+              onClick={handleBackToList}
               className="flex items-center gap-2 text-gray-600 hover:text-primary transition-colors whitespace-nowrap"
             >
               <ArrowLeft className="w-5 h-5" />
@@ -344,20 +274,19 @@ export function ProductDetailPage() {
               )}
 
               {/* Cart Button */}
-              
-                <button
-                  onClick={handleOpenCart}
-                  className="relative p-2 hover:bg-gray-100 rounded-full transition-colors"
-                  aria-label="장바구니"
-                >
-                  <ShoppingCart className="w-5 h-5 text-gray-600" />
-                  {cartItems.length > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-accent text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
-                      {cartItems.length}
-                    </span>
-                  )}
-                </button>
-            
+
+              <button
+                onClick={handleOpenCart}
+                className="relative p-2 hover:bg-gray-100 rounded-full transition-colors"
+                aria-label="장바구니"
+              >
+                <ShoppingCart className="w-5 h-5 text-gray-600" />
+                {cartItems.length > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-accent text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
+                    {cartItems.length}
+                  </span>
+                )}
+              </button>
             </div>
           </div>
         </div>
@@ -424,7 +353,7 @@ export function ProductDetailPage() {
 
             {/* Thumbnail Gallery */}
             <div className="grid grid-cols-4 gap-3">
-              {productImages.map((img, index) => (
+              {productImages?.map((img:any, index:any) => (
                 <button
                   key={index}
                   onClick={() => setSelectedImage(index)}
