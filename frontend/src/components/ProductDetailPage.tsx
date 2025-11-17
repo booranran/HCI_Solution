@@ -22,6 +22,21 @@ import { ImageSearchModal } from "../components/ImageSearchModal";
 import { CartSheet } from "../components/CartSheet";
 import { set } from "react-hook-form";
 
+interface Product {
+  id: number;
+  name: string;
+  brand: string;
+  price: number;
+  originalPrice: number | null;
+  image: string;
+  rating: number;
+  reviews: number;
+  aiMatch: number;
+  badge: string;
+  category: string;
+  fit_type: string;
+}
+
 interface Review {
   id: number;
   author: string;
@@ -41,23 +56,6 @@ interface AiSummary {
   sizeAccuracy: number;
 }
 
-interface Product {
-  id: number;
-  name: string;
-  brand: string;
-  price: number;
-  originalPrice: number | null;
-  image: string;
-  rating: number;
-  reviews: number;
-  aiMatch: number;
-  badge: string;
-  reviewsList?: Review[];
-  aiReviewSummary?: AiSummary;
-  category: string;
-  fit_type: string;
-}
-
 export function ProductDetailPage() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -70,21 +68,131 @@ export function ProductDetailPage() {
   const { addToCart, cartItems } = useCart();
   const [imageSearchOpen, setImageSearchOpen] = useState(false);
   const [cartOpen, setCartOpen] = useState(false);
-
   const product = location.state?.product;
+
+  // ⭐️ 1. 리뷰와 AI 요약을 담을 State 생성
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [aiSummary, setAiSummary] = useState<AiSummary | null>(null);
+  const [reviewLoading, setReviewLoading] = useState(true);
 
   const handleBack = () => {
     navigate(-1); // "그냥 뒤로 한 칸 가기"
   };
 
+  // ⭐️ 2. 백엔드에서 리뷰 데이터 가져오기
+  useEffect(() => {
+    const fetchReviews = async () => {
+      if (!product?.id) return;
+
+      try {
+        // 백엔드 API 호출 (product.id는 "suit001" 같은 문자열이어야 함)
+        const response = await fetch(
+          `http://localhost:8000/reviews/${product.id}`
+        );
+        const data = await response.json();
+
+        // (1) 리뷰 리스트 매핑
+        // 백엔드 데이터(DB)와 프론트엔드 인터페이스(Review)의 이름이 다를 수 있으니 맞춰주는 작업
+        const mappedReviews = data.reviews.map((item: any, index: number) => ({
+          id: index,
+          author: item.author || "익명", // DB에 없으면 '익명'
+          rating: item.stars || 5, // DB 키가 'stars'라면 'rating'으로 연결
+          date: item.date || "2024.01.01",
+          size: item.size || "Free",
+          height: item.height || 0,
+          weight: item.weight || 0,
+          comment: item.text || "내용 없음", // DB 키가 'text'라면 'comment'로 연결
+          helpful: 0,
+        }));
+        setReviews(mappedReviews);
+
+        // (2) AI 요약 매핑
+        // 백엔드가 주는 통계(size_rate 등)를 가지고 프론트용 요약 객체 생성
+        // ProductDetailPage.tsx (useEffect 내부)
+
+        if (data.summary && data.summary.total > 0) {
+          // 1. 데이터 꺼내기
+          const { size_rate, pos_rate, mat_rate } = data.summary;
+
+          // 2. '종합 요약(Overall)' 문구 생성 (아까 한 거)
+          const insights = [];
+          if (size_rate < 0.5) insights.push("👖 사이즈 불만이 조금 있어요.");
+          else insights.push("✨ 대부분 정사이즈라고 평가했어요.");
+
+          if (pos_rate > 0.7)
+            insights.push("💖 만족도가 아주 높은 상품입니다!");
+          else if (pos_rate < 0.4)
+            insights.push("🤔 호불호가 갈리는 편이에요.");
+
+          // -------------------------------------------------------
+          // ⭐️ 3. '장점(Pros)' & '단점(Cons)' 자동 생성 (여기가 핵심!)
+          // -------------------------------------------------------
+          const generatedPros = [];
+          const generatedCons = [];
+
+          // (1) 핏/만족도 기준
+          if (pos_rate >= 0.7) {
+            generatedPros.push("핏이 예뻐요 😍");
+            generatedPros.push("재구매 의사 높음");
+          } else if (pos_rate < 0.4) {
+            generatedCons.push("핏이 아쉬워요");
+            generatedCons.push("가성비가 낮아요");
+          } else {
+            generatedPros.push("무난한 디자인");
+          }
+
+          // (2) 사이즈 기준
+          if (size_rate >= 0.7) {
+            generatedPros.push("정확한 사이즈 📏");
+            generatedPros.push("편안한 착용감");
+          } else {
+            generatedCons.push("사이즈 주의 🚨");
+            generatedCons.push("상세 치수 확인 필수");
+          }
+
+          // (3) 재질 기준
+          if (mat_rate >= 0.5) {
+            generatedPros.push("소재가 고급스러워요 ✨");
+            generatedPros.push("탄탄한 원단");
+          }
+
+          // (4) 빈 배열 방지 (데이터가 애매할 때 띄울 기본 멘트)
+          if (generatedPros.length === 0)
+            generatedPros.push("실물이 더 예뻐요");
+          if (generatedCons.length === 0)
+            generatedCons.push("특별한 단점 없음");
+
+          // 4. State 업데이트 (최종 적용)
+          setAiSummary({
+            overall: insights.join(" "),
+
+            // ⭐️ 생성된 배열을 여기에 넣음
+            pros: generatedPros,
+            cons: generatedCons,
+
+            sizeAccuracy: Math.round(size_rate * 100) || 0,
+          });
+        } else {
+          setAiSummary(null);
+        }
+      } catch (error) {
+        console.error("리뷰 로딩 실패:", error);
+      } finally {
+        setReviewLoading(false);
+      }
+    };
+
+    fetchReviews();
+  }, [product]);
+
   const handleBackToList = () => {
     // ⭐️ 1. 주소는 '/products'
     // ⭐️ 2. 'category'라는 이름표에 'product.category' 값을 담아서 보냄
-    navigate('/products', { 
-      state: { category: product.category } 
+    navigate("/products", {
+      state: { category: product.category },
     });
   };
-  
+
   /** ⭐️ 'AI 사이즈 추천' 버튼을 눌렀을 때 실행할 함수 */
   const handleStartAIFitting = () => {
     // 1. 사이즈 정보 (유지)
@@ -169,21 +277,6 @@ export function ProductDetailPage() {
     M: { chest: 98, shoulder: 42, length: 68, sleeve: 62 },
     L: { chest: 104, shoulder: 44, length: 70, sleeve: 64 },
     XL: { chest: 110, shoulder: 46, length: 72, sleeve: 66 },
-  };
-
-  // Use product-specific reviews if available, otherwise use default
-  const reviews: Review[] = product.reviewsList || [];
-  const aiSummary: AiSummary = product.aiReviewSummary || {
-    overall:
-      '전체 리뷰의 95%가 긍정적이며, 특히 "사이즈 정확도"와 "품질"에 대한 만족도가 높습니다.',
-    pros: [
-      "정확한 사이즈 매칭",
-      "우수한 원단 품질",
-      "세련된 디자인",
-      "빠른 배송",
-    ],
-    cons: ["일부 배송 지연 발생"],
-    sizeAccuracy: 98,
   };
 
   const handleAddToCart = () => {
@@ -353,7 +446,7 @@ export function ProductDetailPage() {
 
             {/* Thumbnail Gallery */}
             <div className="grid grid-cols-4 gap-3">
-              {productImages?.map((img:any, index:any) => (
+              {productImages?.map((img: any, index: any) => (
                 <button
                   key={index}
                   onClick={() => setSelectedImage(index)}
@@ -482,7 +575,17 @@ export function ProductDetailPage() {
                   <div className="mt-3 p-3 bg-accent/10 rounded-xl flex items-start gap-2">
                     <Sparkles className="w-4 h-4 text-accent mt-0.5 flex-shrink-0" />
                     <p className="text-sm text-primary">
-                      AI 추천 사이즈입니다. 98%의 고객이 만족했어요!
+                      {aiSummary ? (
+                        <>
+                          AI 리뷰 분석 결과, 구매자의{" "}
+                          <span className="font-bold text-accent">
+                            {aiSummary.sizeAccuracy}%
+                          </span>
+                          가 정사이즈라고 평가했어요!
+                        </>
+                      ) : (
+                        "AI가 리뷰를 분석하고 있습니다..."
+                      )}
                     </p>
                   </div>
                 )}
@@ -911,6 +1014,7 @@ export function ProductDetailPage() {
 
         {/* Reviews Section */}
         <div className="mt-20 border-t pt-12">
+          {/* 1. 헤더 (제목 + AI 버튼) */}
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-3xl text-primary">고객 리뷰</h2>
             <button
@@ -922,9 +1026,10 @@ export function ProductDetailPage() {
             </button>
           </div>
 
-          {/* AI Summary */}
-          {showAISummary && (
+          {/* 2. AI Summary (조건부 렌더링) - 네가 수정한 부분 */}
+          {showAISummary && aiSummary && (
             <div className="mb-8 bg-gradient-to-br from-accent/10 to-primary/5 rounded-3xl p-8 space-y-6">
+              {/* 상단: 타이틀 & 총평 */}
               <div className="flex items-start gap-3">
                 <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center flex-shrink-0">
                   <Sparkles className="w-6 h-6 text-accent" />
@@ -940,6 +1045,7 @@ export function ProductDetailPage() {
                 </div>
               </div>
 
+              {/* 중간: 장점 & 단점 */}
               <div className="grid md:grid-cols-2 gap-6">
                 {/* Pros */}
                 <div className="bg-white rounded-2xl p-6">
@@ -980,7 +1086,7 @@ export function ProductDetailPage() {
                 </div>
               </div>
 
-              {/* Size Accuracy */}
+              {/* 하단: 사이즈 정확도 */}
               <div className="bg-white rounded-2xl p-6">
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-primary">사이즈 정확도</span>
@@ -998,7 +1104,7 @@ export function ProductDetailPage() {
             </div>
           )}
 
-          {/* Reviews List */}
+          {/* 3. 리뷰 목록 (⭐️ 이게 있어야 함!) */}
           <div className="space-y-6">
             {reviews.map((review) => (
               <div

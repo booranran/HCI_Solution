@@ -13,14 +13,14 @@ from termcolor import colored
 # ----------------------------
 # 1. 'backend' 폴더와 '루트' 폴더 경로를 따로 정의
 SCRIPT_DIR = Path(__file__).resolve().parent  # 👈 .../backend
-BASE_DIR = SCRIPT_DIR.parent               # 👈 .../HCI_Solution
+BASE_DIR = SCRIPT_DIR.parent  # 👈 .../HCI_Solution
 
 # 2. .env 파일은 'SCRIPT_DIR' (backend) 안에 있음
-dotenv_path = SCRIPT_DIR / ".env" 
-load_dotenv(dotenv_path) 
+dotenv_path = SCRIPT_DIR / ".env"
+load_dotenv(dotenv_path)
 
 # 3. .env 에 새로 추가한 "GEMINI_API_KEY"를 사용
-api_key = os.getenv("GEMINI_API_KEY") 
+api_key = os.getenv("GEMINI_API_KEY")
 
 # ✅ 4. (디버깅) 키가 진짜 로드됐는지 확인
 if not api_key:
@@ -32,10 +32,10 @@ if not api_key:
     except FileNotFoundError:
         print(".env 파일 자체가 존재하지 않습니다.")
     print("----------------------------")
-    exit() # 👈 키 없으면 그냥 멈춤
+    exit()  # 👈 키 없으면 그냥 멈춤
 
-genai.configure(api_key=api_key) 
-print("✅ Gemini API 키 로드 성공!") # 👈 디버깅용
+genai.configure(api_key=api_key)
+print("✅ Gemini API 키 로드 성공!")  # 👈 디버깅용
 
 # 5. MODEL_NAME (오타 수정했던 거)
 MODEL_NAME = "gemini-2.5-flash"
@@ -47,6 +47,7 @@ OUT_CSV = DATA_DIR / "review_results.csv"
 
 # 7. gemini_prompt.txt는 'SCRIPT_DIR' (backend) 안에 있음
 PROMPT_TEMPLATE = (SCRIPT_DIR / "gemini_prompt.txt").read_text(encoding="utf-8")
+
 
 # ----------------------------
 # Gemini 호출 함수
@@ -98,9 +99,22 @@ def run_analysis(input_path=REVIEWS_PATH, output_path=OUT_CSV, limit=None):
             print(f"⚠️ {rid} 파싱 실패")
             continue
 
-        # 👇 product_id도 결과에 추가하기
-        parsed["id"], parsed["stars"], parsed["product_id"], parsed["text"] = rid, stars, product_id, text 
-        results.append(parsed)
+        # ✅ [수정] JSON에 있는 '모든' 필드를 결과(parsed)에 합치기
+        # (author, date, height, weight, size 등이 다 들어감)
+        parsed.update(review)
+
+        # (단, Gemini가 분석한 결과가 우선이므로 update 순서 주의.
+        #  review 원본 데이터 덮어쓰기 방지를 위해, review를 먼저 넣고 parsed를 합치는 게 안전할 수도 있지만,
+        #  지금은 간단하게 원본 review에 parsed(분석결과)를 합치는 방식 추천)
+
+        # ⭐️ 추천 코드:
+        # 1. 원본 리뷰 데이터 복사
+        final_data = review.copy()
+        # 2. Gemini 분석 결과(parsed)를 덮어씌움 (fit_sentiment 등 추가됨)
+        final_data.update(parsed)
+
+        results.append(final_data)
+
         time.sleep(6.1)
 
     df = pd.DataFrame(results)
