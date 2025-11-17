@@ -17,6 +17,7 @@ backend/uploads/
 backend/vertex-ai-key.json
 .env
 *.env 
+node_modules/
 
 # System
 .DS_Store
