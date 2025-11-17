@@ -3,9 +3,9 @@
     "id": "shirt001",
     "name": "화이트 셔츠",
     "brand": "Maison Elite",
-    "price": "389000",
+    "price": 389000,
     "originalPrice": null,
-    "image_path": "assets/blazer/blazer4.jpg",
+    "image_path": "assets/shirts/shirts3.jpg",
     "rating": 4.9,
     "reviews": 89,
     "aiMatch": 98,
@@ -20,12 +20,13 @@
       "XL": { "shoulder": 50, "chest": 110, "sleeve": 63, "length": 76 }
     },
     "detail_images": [
-      { "path": "assets/blazer/blazer1.jpg", "type": "model", "alt": "앞모습" },
-      { "path": "assets/blazer/blazer3.jpg", "type": "model", "alt": "뒷모습" },
-      { "path": "assets/blazer/blazer4.jpg", "type": "product", "alt": "상세 앞" },
-      { "path": "assets/blazer/blazer5.jpg", "type": "product", "alt": "상세 뒤" }
+      { "path": "assets/shirts/shirts1.jpg", "type": "model", "alt": "앞모습" },
+      { "path": "assets/shirts/shirts2.jpg", "type": "model", "alt": "뒷모습" },
+      { "path": "assets/shirts/shirts3.jpg", "type": "product", "alt": "상세 앞" },
+      { "path": "assets/shirts/shirts4.jpg", "type": "product", "alt": "상세 뒤" }
     ]
   },
+
   {
     "id": "suit001",
     "name": "프리미엄 테일러드 수트",
@@ -52,5 +53,463 @@
       { "path": "assets/blazer/blazer4.jpg", "type": "product", "alt": "상세 앞" },
       { "path": "assets/blazer/blazer5.jpg", "type": "product", "alt": "상세 뒤" }
     ]
+  },
+
+  {
+    "id": "coat001",
+    "name": "어쩌구코트",
+    "brand": "Maison Elite",
+    "price": 389000,
+    "originalPrice": null,
+    "image_path": "assets/coat/coat3.jpg",
+    "rating": 4.9,
+    "reviews": 89,
+    "aiMatch": 98,
+    "badge": "AI Pick",
+    "category": "남성 컬렉션",
+    "fit_type": "tops",
+    "fabric": "polySpan",
+    "measurements": {
+      "S": { "shoulder": 44, "chest": 95, "sleeve": 60, "length": 70 },
+      "M": { "shoulder": 46, "chest": 100, "sleeve": 61, "length": 72 },
+      "L": { "shoulder": 48, "chest": 105, "sleeve": 62, "length": 74 },
+      "XL": { "shoulder": 50, "chest": 110, "sleeve": 63, "length": 76 }
+    },
+    "detail_images": [
+      { "path": "assets/coat/coat1.jpg", "type": "model", "alt": "앞모습" },
+      { "path": "assets/coat/coat3.jpg", "type": "model", "alt": "뒷모습" },
+      { "path": "assets/coat/coat4.jpg", "type": "product", "alt": "상세 앞" },
+      { "path": "assets/coat/coat5.jpg", "type": "product", "alt": "상세 뒤" }
+    ]
+  },
+
+  {
+    "id": "dress001",
+    "name": "드레스",
+    "brand": "Fittory",
+    "price": 299000,
+    "originalPrice": null,
+    "image_path": "assets/dress/dress1.jpg",
+    "rating": 4.5,
+    "reviews": 34,
+    "aiMatch": 95,
+    "badge": "temp",
+    "category": "여성 컬렉션",
+    "fit_type": "tops",
+    "fabric": "goose",
+    "measurements": {
+      "s": { "shoulder": 61, "chest": 54, "sleeve": 46.4, "length": 62 },
+      "m": { "shoulder": 63, "chest": 56.5, "sleeve": 48.4, "length": 65 },
+      "l": { "shoulder": 64, "chest": 59, "sleeve": 50, "length": 67 }
+    },
+    "detail_images": [
+      { "path": "assets/dress/dress1.jpg", "type": "model", "alt": "temp" },
+      { "path": "assets/dress/dress2.jpg", "type": "model", "alt": "temp" },
+      { "path": "assets/dress/dress3.jpg", "type": "product", "alt": "temp" },
+      { "path": "assets/dress/dress4.jpg", "type": "product", "alt": "temp" }
+    ]
+  },
+
+  {
+    "id": "jacket001",
+    "name": "재킷",
+    "brand": "Fittory",
+    "price": 199000,
+    "originalPrice": null,
+    "image_path": "assets/jacket/jacket1.jpg",
+    "rating": 4.5,
+    "reviews": 34,
+    "aiMatch": 95,
+    "badge": "temp",
+    "category": "남성 컬렉션",
+    "fit_type": "tops",
+    "fabric": "goose",
+    "measurements": {
+      "s": { "shoulder": 61, "chest": 54, "sleeve": 46.4, "length": 62 },
+      "m": { "shoulder": 63, "chest": 56.5, "sleeve": 48.4, "length": 65 },
+      "l": { "shoulder": 64, "chest": 59, "sleeve": 50, "length": 67 }
+    },
+    "detail_images": [
+      { "path": "assets/jacket/jacket1.jpg", "type": "model", "alt": "temp" },
+      { "path": "assets/jacket/jacket2.jpg", "type": "model", "alt": "temp" },
+      { "path": "assets/jacket/jacket3.jpg", "type": "product", "alt": "temp" },
+      { "path": "assets/jacket/jacket4.jpg", "type": "product", "alt": "temp" }
+    ]
+  },
+
+  {
+    "id": "sweater01",
+    "name": "팬츠",
+    "brand": "Fittory",
+    "price": 159000,
+    "originalPrice": null,
+    "image_path": "assets/sweater/sweater1.jpg",
+    "rating": 4.5,
+    "reviews": 34,
+    "aiMatch": 95,
+    "badge": "temp",
+    "category": "남성 컬렉션",
+    "fit_type": "tops",
+    "fabric": "goose",
+    "measurements": {
+      "s": { "waist": 70, "hip": 90, "thigh": 50, "length": 100 },
+      "m": { "waist": 75, "hip": 95, "thigh": 52, "length": 102 },
+      "l": { "waist": 80, "hip": 100, "thigh": 54, "length": 104 }
+    },
+    "detail_images": [
+      { "path": "assets/sweater/sweater1.jpg", "type": "model", "alt": "temp" },
+      { "path": "assets/sweater/sweater2.jpg", "type": "model", "alt": "temp" },
+      { "path": "assets/sweater/sweater3.jpg", "type": "product", "alt": "temp" },
+      { "path": "assets/sweater/sweater4.jpg", "type": "product", "alt": "temp" }
+    ]
+  },
+
+  {
+    "id": "trench101",
+    "name": "트렌치코트",
+    "brand": "Fittory",
+    "price": 59000,
+    "originalPrice": null,
+    "image_path": "assets/trench/trench1.jpg",
+    "rating": 4.5,
+    "reviews": 34,
+    "aiMatch": 95,
+    "badge": "temp",
+    "category": "남성 컬렉션",
+    "fit_type": "accessories",
+    "fabric": "goose",
+    "measurements": {
+      "free": { "circumference": 58, "height": 12, "brim": 7 }
+    },
+    "detail_images": [
+      { "path": "assets/trench/trench1.jpg", "type": "model", "alt": "temp" },
+      { "path": "assets/trench/trench2.jpg", "type": "model", "alt": "temp" },
+      { "path": "assets/trench/trench3.jpg", "type": "product", "alt": "temp" },
+      { "path": "assets/trench/trench4.jpg", "type": "product", "alt": "temp" }
+    ]
+  },
+
+  {
+    "id": "shirt002",
+    "name": "오버핏 코튼 셔츠",
+    "brand": "Fittory",
+    "price": 174000,
+    "originalPrice": null,
+    "image_path": "assets/shirts/shirts5.png",
+    "rating": 4.5,
+    "reviews": 34,
+    "aiMatch": 95,
+    "badge": "temp",
+    "category": "남성 컬렉션",
+    "fit_type": "tops",
+    "fabric": "cotton",
+    "measurements": {
+      "S": { "shoulder": 44, "chest": 52, "sleeve": 60, "length": 66 },
+      "M": { "shoulder": 46, "chest": 68, "sleeve": 61, "length": 68 }
+    },
+    "detail_images": [
+      { "path": "assets/shirts/shirts5.png", "type": "model", "alt": "temp" }
+    ]
+  },
+
+  {
+    "id": "padded001",
+    "name": "라이트 경량패딩",
+    "brand": "Fittory",
+    "price": 128000,
+    "originalPrice": null,
+    "image_path": "assets/",
+    "rating": 4.3,
+    "reviews": 22,
+    "aiMatch": 91,
+    "badge": "temp",
+    "category": "남성 컬렉션",
+    "fit_type": "tops",
+    "fabric": "goose",
+    "measurements": {
+      "s": { "shoulder": 61, "chest": 54, "sleeve": 46.4, "length": 62 },
+      "m": { "shoulder": 63, "chest": 56.5, "sleeve": 48.4, "length": 65 },
+      "l": { "shoulder": 64, "chest": 59, "sleeve": 50, "length": 67 }
+    },
+    "detail_images": [
+      { "path": "assets/", "type": "model", "alt": "temp" },
+      { "path": "assets/", "type": "model", "alt": "temp" },
+      { "path": "assets/", "type": "product", "alt": "temp" },
+      { "path": "assets/", "type": "product", "alt": "temp" }
+    ]
+  },
+
+  {
+    "id": "shirt003",
+    "name": "오버핏 데님 셔츠",
+    "brand": "Fittory",
+    "price": 152000,
+    "originalPrice": null,
+    "image_path": "assets/",
+    "rating": 4.1,
+    "reviews": 12,
+    "aiMatch": 89,
+    "badge": "temp",
+    "category": "남성 컬렉션",
+    "fit_type": "tops",
+    "fabric": "denim",
+    "measurements": {
+      "S": { "shoulder": 59, "chest": 59.5, "sleeve": 52.4, "length": 74 },
+      "M": { "shoulder": 60.5, "chest": 62, "sleeve": 54, "length": 75.5 },
+      "L": { "shoulder": 62, "chest": 64.5, "sleeve": 55.6, "length": 77 },
+      "XL": { "shoulder": 63, "chest": 69, "sleeve": 58.6, "length": 78.5 }
+    },
+    "detail_images": [
+      { "path": "assets/", "type": "model", "alt": "temp" },
+      { "path": "assets/", "type": "model", "alt": "temp" },
+      { "path": "assets/", "type": "product", "alt": "temp" },
+      { "path": "assets/", "type": "product", "alt": "temp" }
+    ]
+  },
+
+  {
+    "id": "shirt004",
+    "name": "컴포트 코튼 셔츠",
+    "brand": "Fittory",
+    "price": 102000,
+    "originalPrice": null,
+    "image_path": "assets/",
+    "rating": 4.7,
+    "reviews": 18,
+    "aiMatch": 97,
+    "badge": "temp",
+    "category": "남성 컬렉션",
+    "fit_type": "tops",
+    "fabric": "cotton",
+    "measurements": {
+      "S": { "shoulder": 44, "chest": 53, "sleeve": 59, "length": 67 },
+      "M": { "shoulder": 46, "chest": 55, "sleeve": 60, "length": 69 },
+      "L": { "shoulder": 48, "chest": 57, "sleeve": 61, "length": 71 }
+    },
+    "detail_images": [
+      { "path": "assets/", "type": "model", "alt": "temp" },
+      { "path": "assets/", "type": "model", "alt": "temp" },
+      { "path": "assets/", "type": "product", "alt": "temp" },
+      { "path": "assets/", "type": "product", "alt": "temp" }
+    ]
+  },
+
+  {
+    "id": "shirt005",
+    "name": "체크 오버핏 셔츠",
+    "brand": "Fittory",
+    "price": 168000,
+    "originalPrice": null,
+    "image_path": "assets/",
+    "rating": 3.9,
+    "reviews": 25,
+    "aiMatch": 84,
+    "badge": "temp",
+    "category": "남성 컬렉션",
+    "fit_type": "tops",
+    "fabric": "cotton",
+    "measurements": {
+      "M": { "shoulder": 60, "chest": 61, "sleeve": 54.5, "length": 76 },
+      "L": { "shoulder": 61, "chest": 63, "sleeve": 56, "length": 78 },
+      "XL": { "shoulder": 63, "chest": 66, "sleeve": 58, "length": 80 }
+    },
+    "detail_images": [
+      { "path": "assets/", "type": "model", "alt": "temp" },
+      { "path": "assets/", "type": "model", "alt": "temp" },
+      { "path": "assets/", "type": "product", "alt": "temp" },
+      { "path": "assets/", "type": "product", "alt": "temp" }
+    ]
+  },
+
+  {
+    "id": "windbreaker001",
+    "name": "에센셜 경량 바람막이",
+    "brand": "Fittory",
+    "price": 149000,
+    "originalPrice": null,
+    "image_path": "assets/",
+    "rating": 4.2,
+    "reviews": 17,
+    "aiMatch": 92,
+    "badge": "temp",
+    "category": "남성 컬렉션",
+    "fit_type": "tops",
+    "fabric": "nylon",
+    "measurements": {
+      "S": { "shoulder": 47, "chest": 55, "sleeve": 74, "length": 63 },
+      "M": { "shoulder": 48, "chest": 57, "sleeve": 76, "length": 65 },
+      "L": { "shoulder": 50, "chest": 59, "sleeve": 78, "length": 67 },
+      "XL": { "shoulder": 51, "chest": 61, "sleeve": 80, "length": 69 }
+    },
+    "detail_images": [
+      { "path": "assets/", "type": "model", "alt": "temp" },
+      { "path": "assets/", "type": "model", "alt": "temp" },
+      { "path": "assets/", "type": "product", "alt": "temp" },
+      { "path": "assets/", "type": "product", "alt": "temp" }
+    ]
+  },
+
+  {
+    "id": "knit001",
+    "name": "울 블렌드 니트",
+    "brand": "Fittory",
+    "price": 118000,
+    "originalPrice": null,
+    "image_path": "assets/",
+    "rating": 4.6,
+    "reviews": 11,
+    "aiMatch": 93,
+    "badge": "temp",
+    "category": "남성 컬렉션",
+    "fit_type": "tops",
+    "fabric": "wool",
+    "measurements": {
+      "M": { "shoulder": 45, "chest": 58, "sleeve": 62, "length": 66 },
+      "L": { "shoulder": 47, "chest": 60, "sleeve": 63, "length": 68 },
+      "XL": { "shoulder": 48, "chest": 62, "sleeve": 64, "length": 70 }
+    },
+    "detail_images": [
+      { "path": "assets/", "type": "model", "alt": "temp" },
+      { "path": "assets/", "type": "model", "alt": "temp" },
+      { "path": "assets/", "type": "product", "alt": "temp" },
+      { "path": "assets/", "type": "product", "alt": "temp" }
+    ]
+  },
+
+  {
+    "id": "pants001",
+    "name": "치노 테이퍼드 팬츠",
+    "brand": "Fittory",
+    "price": 132000,
+    "originalPrice": null,
+    "image_path": "assets/",
+    "rating": 4.0,
+    "reviews": 15,
+    "aiMatch": 88,
+    "badge": "temp",
+    "category": "남성 컬렉션",
+    "fit_type": "bottoms",
+    "fabric": "cotton",
+    "measurements": {
+      "S": { "waist": 36, "hip": 48, "thigh": 30, "length": 92 },
+      "M": { "waist": 38, "hip": 50, "thigh": 31, "length": 94 },
+      "L": { "waist": 40, "hip": 52, "thigh": 32, "length": 96 }
+    },
+    "detail_images": [
+      { "path": "assets/", "type": "model", "alt": "temp" },
+      { "path": "assets/", "type": "model", "alt": "temp" },
+      { "path": "assets/", "type": "product", "alt": "temp" },
+      { "path": "assets/", "type": "product", "alt": "temp" }
+    ]
+  },
+
+  {
+    "id": "pants002",
+    "name": "투턱 와이드 슬랙스",
+    "brand": "Fittory",
+    "price": 158000,
+    "originalPrice": null,
+    "image_path": "assets/",
+    "rating": 4.5,
+    "reviews": 26,
+    "aiMatch": 96,
+    "badge": "temp",
+    "category": "남성 컬렉션",
+    "fit_type": "bottoms",
+    "fabric": "wool",
+    "measurements": {
+      "M": { "waist": 41, "hip": 53, "thigh": 33, "length": 101 },
+      "L": { "waist": 43, "hip": 55, "thigh": 34, "length": 103 },
+      "XL": { "waist": 45, "hip": 57, "thigh": 35, "length": 105 }
+    },
+    "detail_images": [
+      { "path": "assets/", "type": "model", "alt": "temp" },
+      { "path": "assets/", "type": "model", "alt": "temp" },
+      { "path": "assets/", "type": "product", "alt": "temp" },
+      { "path": "assets/", "type": "product", "alt": "temp" }
+    ]
+  },
+
+  {
+    "id": "pants003",
+    "name": "스트레이트 데님 팬츠",
+    "brand": "Fittory",
+    "price": 112000,
+    "originalPrice": null,
+    "image_path": "assets/",
+    "rating": 4.3,
+    "reviews": 14,
+    "aiMatch": 92,
+    "badge": "temp",
+    "category": "남성 컬렉션",
+    "fit_type": "bottoms",
+    "fabric": "denim",
+    "measurements": {
+      "S": { "waist": 37, "hip": 49, "thigh": 30, "length": 104 },
+      "M": { "waist": 39, "hip": 51, "thigh": 31, "length": 106 },
+      "L": { "waist": 41, "hip": 53, "thigh": 32, "length": 108 }
+    },
+    "detail_images": [
+      { "path": "assets/", "type": "model", "alt": "temp" },
+      { "path": "assets/", "type": "model", "alt": "temp" },
+      { "path": "assets/", "type": "product", "alt": "temp" },
+      { "path": "assets/", "type": "product", "alt": "temp" }
+    ]
+  },
+
+  {
+    "id": "pants004",
+    "name": "에센셜 조거 팬츠",
+    "brand": "Fittory",
+    "price": 123000,
+    "originalPrice": null,
+    "image_path": "assets/",
+    "rating": 3.8,
+    "reviews": 11,
+    "aiMatch": 78,
+    "badge": "temp",
+    "category": "남성 컬렉션",
+    "fit_type": "bottoms",
+    "fabric": "fleece",
+    "measurements": {
+      "M": { "waist": 38, "hip": 50, "thigh": 31, "length": 95 },
+      "L": { "waist": 40, "hip": 52, "thigh": 32, "length": 97 },
+      "XL": { "waist": 42, "hip": 54, "thigh": 33, "length": 99 }
+    },
+    "detail_images": [
+      { "path": "assets/", "type": "model", "alt": "temp" },
+      { "path": "assets/", "type": "model", "alt": "temp" },
+      { "path": "assets/", "type": "product", "alt": "temp" },
+      { "path": "assets/", "type": "product", "alt": "temp" }
+    ]
+  },
+
+  {
+    "id": "pants005",
+    "name": "벌룬핏 코튼 팬츠",
+    "brand": "Fittory",
+    "price": 147000,
+    "originalPrice": null,
+    "image_path": "assets/",
+    "rating": 4.4,
+    "reviews": 16,
+    "aiMatch": 85,
+    "badge": "temp",
+    "category": "남성 컬렉션",
+    "fit_type": "bottoms",
+    "fabric": "cotton",
+    "measurements": {
+      "S": { "waist": 36, "hip": 54, "thigh": 34, "length": 94 },
+      "M": { "waist": 38, "hip": 56, "thigh": 35, "length": 96 },
+      "L": { "waist": 40, "hip": 58, "thigh": 36, "length": 98 },
+      "XL": { "waist": 42, "hip": 60, "thigh": 37, "length": 100 }
+    },
+    "detail_images": [
+      { "path": "assets/", "type": "model", "alt": "temp" },
+      { "path": "assets/", "type": "model", "alt": "temp" },
+      { "path": "assets/", "type": "product", "alt": "temp" },
+      { "path": "assets/", "type": "product", "alt": "temp" }
+    ]
   }
+
 ]
