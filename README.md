@@ -103,7 +103,7 @@ HCI_SOLUTION/
     │   └── App.tsx          # 라우팅 설정
     └── ...
 
-    ---
+---
 
 ## ⚠️ 트러블슈팅 (Troubleshooting)
 
@@ -115,4 +115,3 @@ HCI_SOLUTION/
     * `vertex-ai-key.json` 파일 경로가 정확한지 확인하세요.
     * `.env` 파일에 Gemini API Key가 올바른지 확인하세요.
     * 백엔드 터미널 로그에 에러 메시지가 출력되는지 확인하세요.
-    
