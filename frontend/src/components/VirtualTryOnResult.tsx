@@ -23,16 +23,20 @@ export default function VirtualTryOnResult() {
   };
 
   const handleBackToChooseProduct = () => {
-    navigate('/product-detail', { 
-      state: { product: product } // ⭐️ 상세 페이지가 렌더링될 때 필요한 '상품 정보'를 다시 넘겨줘야 해
+    navigate("/product-detail", {
+      state: { product: product }, // ⭐️ 상세 페이지가 렌더링될 때 필요한 '상품 정보'를 다시 넘겨줘야 해
     });
   };
 
   const handleRetry = () => {
-    // 업로드 페이지(/virtual-tryon)로 돌아가서 다시 시도
-    navigate("/virtual-tryon", { state: { product: product } });
+    navigate("/virtual-tryon", {
+      state: {
+        product: product,
+        // ⭐️ 원본 이미지도 넘겨서, 로딩 후 혹시라도 null이 되는 것을 방지
+        userImage: userImage,
+      },
+    });
   };
-
   // 데이터 누락 시 예외 처리
   if (!product || !userImage || !resultImage) {
     return (
@@ -84,7 +88,6 @@ export default function VirtualTryOnResult() {
         </div>
 
         <div className="space-y-6">
-
           <div className="bg-white rounded-3xl shadow-xl p-8">
             <div className="grid md:grid-cols-2 gap-6">
               {/* Before */}
