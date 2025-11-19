@@ -95,6 +95,10 @@ export function ProductListPage() {
     navigate('/product-detail', { state: { product } });
   };
 
+  const handleBackToHome = () => {
+    navigate('/'); 
+  };
+
   
 
   if (loading) return <div className="min-h-screen flex items-center justify-center">로딩 중...</div>;
@@ -104,7 +108,7 @@ export function ProductListPage() {
       <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-6 py-5">
           <button
-            onClick={handleBack}
+            onClick={handleBackToHome}
             className="flex items-center gap-2 text-gray-600 hover:text-primary transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
