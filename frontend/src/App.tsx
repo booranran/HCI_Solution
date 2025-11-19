@@ -13,12 +13,13 @@ import { ProductListPage } from "./components/ProductListPage";
 import { ImageSearchModal } from "./components/ImageSearchModal";
 import { CartProvider, useCart } from "./components/CartContext";
 import { Search, ShoppingCart, User, Heart, Menu, Image } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Toaster } from "./components/ui/sonner";
 import VirtualTryOnResult from "./components/VirtualTryOnResult";
 import BodyCompare from "./components/BodyCompare";
 import BodyCompareResult from "./components/BodyCompare_Result";
 import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
+import GlobalClickLogger from "./components/GlobalClickLogger"; // ⭐️ Import 추가
 
 type Page =
   | "home"
@@ -30,9 +31,7 @@ type Page =
 function HomePage() {
   const [cartOpen, setCartOpen] = useState(false);
   const [imageSearchOpen, setImageSearchOpen] = useState(false);
-
   const { cartCount } = useCart();
-
   const navigate = useNavigate();
 
   const handleProductClick = (product: any) => {
@@ -203,6 +202,8 @@ export default function App() {
   return (
     <CartProvider>
       <BrowserRouter>
+        <GlobalClickLogger />
+
         {/* Toaster는 Routes 밖에 두면 모든 페이지에서 알림이 뜸 */}
         <Toaster />
 
