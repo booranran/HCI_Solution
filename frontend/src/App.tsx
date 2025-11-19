@@ -116,7 +116,6 @@ function HomePage() {
               >
                 여성
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent group-hover:w-full transition-all"></span>
-                console.log("여성 컬렉션 클릭됨");
               </button>
 
               {/* 3. 남성 */}
