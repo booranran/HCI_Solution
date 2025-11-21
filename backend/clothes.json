@@ -528,5 +528,28 @@
     "detail_images": [
       { "path": "assets/pants/pants6.png", "type": "model", "alt": "new" }
     ]
+  },
+  {
+    "id": "pants006",
+    "name": "CHECK PLEATED STRAIGHT TROUSERS (BEIGE CHECK)",
+    "brand": "쇼트 센텐스",
+    "price": 408000,
+    "originalPrice": 443000,
+    "image_path": "assets/pants/pants6.png",
+    "rating": 4.4,
+    "reviews": 16,
+    "aiMatch": 85,
+    "badge": "new",
+    "category": "여성 컬렉션",
+    "fit_type": "bottoms",
+    "fabric": "cotton",
+    "measurements": {
+      "S": { "waist": 34.5, "hip": 51, "thigh": 34, "length": 102 },
+      "M": { "waist": 36, "hip": 52.5, "thigh": 35, "length": 103.5 },
+      "L": { "waist": 37.5, "hip": 54, "thigh": 36, "length": 105 }
+    },
+    "detail_images": [
+      { "path": "assets/pants/pants6.png", "type": "model", "alt": "new" }
+    ]
   }
 ]

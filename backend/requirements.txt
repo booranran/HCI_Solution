@@ -1,11 +1,6 @@
 fastapi
-uvicorn
-pandas
+uvicorn[standard]
+python-multipart
+pydantic
 requests
-google-cloud-aiplatform
 google-generativeai
-python-dotenv
-termcolor
-google-api-core
-google-auth
-google-auth-httplib2
