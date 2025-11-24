@@ -41,7 +41,7 @@ async def show_routes():
 # CORS 설정 (테스트용 전체 허용)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
