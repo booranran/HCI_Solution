@@ -8,8 +8,8 @@ from pathlib import Path
 import json
 import requests
 import base64
-import imghdr
 import pandas as pd
+import magic
 
 from google.oauth2 import service_account
 import google.auth.transport.requests
@@ -85,8 +85,8 @@ API_URL = (
 # ✅ 배경제거 함수
 def remove_background(image_bytes: bytes):
     REMOVE_BG_KEY = "scfmBt22NGarDhAPck4ALYxd"
-    image_type = imghdr.what(None, image_bytes) or "png"
-    mime_type = f"image/{image_type}"
+    mime_type = magic.from_buffer(image_bytes, mime=True) # ⭐️ python-magic으로 파일 타입 체크
+    image_type = mime_type.split('/')[-1]
 
     res = requests.post(
         "https://api.remove.bg/v1.0/removebg",
