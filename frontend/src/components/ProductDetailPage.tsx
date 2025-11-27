@@ -195,28 +195,40 @@ export function ProductDetailPage() {
 
   /** ⭐️ 'AI 사이즈 추천' 버튼을 눌렀을 때 실행할 함수 */
   const handleStartAIFitting = () => {
-    // 1. 사이즈 정보 (유지)
-    if (!product.measurements) {
+    // 1. 사이즈 정보 확인
+    if (!product.measurements) { // (백엔드 데이터 키 이름 확인: sizes 또는 measurements)
       toast.error("사이즈 정보가 없습니다.");
       return;
     }
-    const productSizes = product.measurements;
+    const productSizes = product.measurements; // (JSON 키가 measurements라면)
 
-    // ⭐️ 2. 카테고리 (추측 로직 삭제 -> fit_type 사용)
-    // JSON에 fit_type이 있으면 그걸 쓰고, 없으면 기본값 'tops'
+    // 2. 카테고리 & 원단 설정
     const fitType = product.fit_type === "bottoms" ? "bottoms" : "tops";
-
-    // 3. 원단 (유지)
     const fabric = product.fabric || "cotton";
 
-    // 4. 이동 (유지)
-    navigate("/body-compare", {
-      state: {
-        productSizes: productSizes,
-        category: fitType, // 'tops' or 'bottoms'가 정확하게 들어감
-        fabric: fabric,
-      },
-    });
+    // ⭐️⭐️ [핵심 로직 추가] Free 사이즈 체크 ⭐️⭐️
+    const isFreeSize = productSizes.free || productSizes.FREE || productSizes.Free;
+
+    if (isFreeSize) {
+      // 🚀 Case A: Free 사이즈면 -> 결과 페이지로 '바로 점프' (입력 패스)
+      navigate("/body-compare/result", {
+        state: {
+          productSizes: productSizes,
+          category: fitType,
+          fabric: fabric,
+          formData: {}, // ⭐️ 입력값이 없으니 빈 객체 보냄 (결과 페이지가 알아서 무시함)
+        },
+      });
+    } else {
+      // 🚶 Case B: 일반 사이즈(S, M, L)면 -> 폼 페이지로 이동 (입력 필요)
+      navigate("/body-compare", {
+        state: {
+          productSizes: productSizes,
+          category: fitType,
+          fabric: fabric,
+        },
+      });
+    }
   };
 
   const handleOpenImageSearch = () => {

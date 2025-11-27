@@ -59,33 +59,133 @@ export default function BodyCompare_Result() {
   }, [userBody, productSizes, fabric, category]); // 의존성 배열에 다 넣어줌
 
   // ⭐️ 3. 나머지는 아까 코드랑 '완전히' 동일
+  const handleGoShopping = () => {
+    // ⭐️ 메인 페이지('/')로 '이동'시킨다
+    navigate("/");
+  };
 
   const currentResult = recommendations[selectedFit];
-  if (!currentResult) {
+
+
+  if (productSizes && (productSizes.free || productSizes.FREE)) {
+    // (대소문자 방어: free 또는 FREE)
+    const spec = productSizes.free || productSizes.FREE; 
+
+    // ⭐️ 치수 이름을 한글로 보여줄 '사전' (필요한 거 다 넣어둠)
+    const labels: Record<string, string> = {
+      shoulder: "어깨",
+      chest: "가슴",
+      sleeve: "소매",
+      length: "총장",
+      waist: "허리",
+      hip: "엉덩이",
+      thigh: "허벅지",
+      circumference: "둘레",
+      height: "높이",
+      width: "너비"
+      // (여기에 없는 키가 들어오면 그냥 영어 키 그대로 보여줌)
+    };
+
     return (
-      <div className="result-container">
-        <h2>계산 결과 없음</h2>
-        <p>
-          '{selectedFit}'에 맞는 사이즈를 찾지 못했습니다. 다른 핏을
-          선택해보세요.
-        </p>
-        {/* 탭 버튼은 여전히 보여줘서 다른 핏을 누를 수 있게 함 */}
-        <div className="fit-selector">
-          <button onClick={() => handleFitChange("slim")}>슬림핏</button>
-          <button onClick={() => handleFitChange("regular")}>레귤러핏</button>
-          <button onClick={() => handleFitChange("semiOver")}>
-            세미오버핏
+      <div className="min-h-screen bg-gray-50 py-12 px-6 flex items-center justify-center">
+        <div className="w-full max-w-md bg-white rounded-3xl shadow-xl p-8 text-center">
+          
+          {/* 1. 헤더 */}
+          <div className="mb-8">
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-accent/10 rounded-full mb-4">
+              <span className="text-3xl">📏</span> {/* 모자 아이콘 대신 '자' 아이콘으로 변경 */}
+            </div>
+            <h2 className="text-2xl font-bold text-primary mb-2">
+              ONE SIZE (FREE)
+            </h2>
+            <p className="text-gray-600">
+              이 상품은 단일 사이즈입니다.<br />
+              아래 실측 정보를 확인해주세요.
+            </p>
+          </div>
+
+          {/* 2. 실측 정보 카드 (동적 렌더링) */}
+          <div className="bg-gray-50 rounded-2xl p-6 mb-8 border border-gray-100">
+            <h3 className="text-lg font-bold text-primary mb-4">상세 치수</h3>
+            <div className="space-y-3">
+              
+              {/* ⭐️⭐️ 여기서 spec 안에 있는 모든 키를 자동으로 뿌려줌 ⭐️⭐️ */}
+              {Object.entries(spec).map(([key, value]) => (
+                <div key={key} className="flex justify-between items-center border-b border-gray-200 last:border-0 pb-2 last:pb-0">
+                  <span className="text-gray-600 capitalize">
+                    {labels[key] || key} {/* 한글 이름이 있으면 쓰고, 없으면 영어 그대로 */}
+                  </span>
+                  <span className="font-bold text-primary">
+                    {String(value)} cm
+                  </span>
+                </div>
+              ))}
+
+            </div>
+          </div>
+
+          {/* 3. 돌아가기 버튼 */}
+          <button
+            onClick={() => navigate("/")}
+            className="w-full bg-primary hover:bg-accent text-white py-4 rounded-full transition-all font-medium shadow-lg"
+          >
+            쇼핑 계속하기
           </button>
-          <button onClick={() => handleFitChange("over")}>오버핏</button>
         </div>
       </div>
     );
   }
 
-  const handleGoShopping = () => {
-    // ⭐️ 메인 페이지('/')로 '이동'시킨다
-    navigate("/");
-  };
+  if (!currentResult) {
+    return (
+      <div className="min-h-screen bg-gray-50 py-12 px-6 flex items-center justify-center">
+        <div className="w-full max-w-md bg-white rounded-3xl shadow-xl p-8 text-center">
+          {/* 1. 아이콘 & 제목 */}
+          <div className="mb-8">
+            <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span className="text-3xl">🤔</span>
+            </div>
+            <h2 className="text-2xl font-bold text-primary mb-2">
+              계산 결과 없음
+            </h2>
+            <p className="text-gray-600 leading-relaxed">
+              <span className="font-bold text-accent">
+                {FIT_TABS.find((t) => t.key === selectedFit)?.label}
+              </span>
+              에 맞는 사이즈를 찾지 못했습니다.
+              <br />
+              아래에서 다른 핏을 선택해보세요.
+            </p>
+          </div>
+
+          {/* 2. 핏 선택 탭 (메인 화면과 똑같은 디자인 적용) */}
+          <div className="bg-accent rounded-[18px] p-1 flex justify-stretch gap-1 mb-8">
+            {FIT_TABS.map((tab) => (
+              <button
+                key={tab.key}
+                onClick={() => handleFitChange(tab.key)}
+                className={`flex-1 py-4 rounded-[15px] transition-all text-center font-bold text-lg ${
+                  tab.key === selectedFit
+                    ? "bg-white text-accent shadow-sm"
+                    : "bg-transparent text-white hover:bg-white/10"
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          {/* 3. 돌아가기 버튼 */}
+          <button
+            onClick={handleGoShopping}
+            className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 py-4 rounded-full transition-all font-medium"
+          >
+            메인으로 돌아가기
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -301,7 +401,7 @@ export default function BodyCompare_Result() {
               // ⭐️ 4. '우리' `currentResult`에서 '진짜' 데이터 꺼내기
               const cmDiff = currentResult.diffCm[key];
               const ease = currentResult.easePercent[key];
-              
+
               // ⭐️ 5. '입력 안 한 값'은 '표시 안 함' (e.g., '소매' 선택 입력 안 함)
               if (cmDiff === null || ease === null) {
                 return null; // 이 부위는 '스킵'

@@ -116,7 +116,8 @@
     "measurements": {
       "s": { "shoulder": 61, "chest": 54, "sleeve": 46.4, "length": 62 },
       "m": { "shoulder": 63, "chest": 56.5, "sleeve": 48.4, "length": 65 },
-      "l": { "shoulder": 64, "chest": 59, "sleeve": 50, "length": 67 }
+      "l": { "shoulder": 64, "chest": 59, "sleeve": 50, "length": 67 },
+      "XL": { "shoulder": 65, "chest": 60, "sleeve": 52, "length": 68 }
     },
     "detail_images": [
       { "path": "assets/dress/dress1.jpg", "type": "model", "alt": "new" },
@@ -143,7 +144,8 @@
     "measurements": {
       "s": { "shoulder": 61, "chest": 54, "sleeve": 46.4, "length": 62 },
       "m": { "shoulder": 63, "chest": 56.5, "sleeve": 48.4, "length": 65 },
-      "l": { "shoulder": 64, "chest": 59, "sleeve": 50, "length": 67 }
+      "l": { "shoulder": 64, "chest": 59, "sleeve": 50, "length": 67 },
+      "XL": { "shoulder": 65, "chest": 60, "sleeve": 52, "length": 68 }
     },
     "detail_images": [
       { "path": "assets/jacket/jacket1.jpg", "type": "model", "alt": "new" },
@@ -169,7 +171,10 @@
     "fabric": "goose",
     "measurements": {
       "S": { "shoulder": 44, "chest": 52, "sleeve": 60, "length": 66 },
-      "M": { "shoulder": 46, "chest": 68, "sleeve": 61, "length": 68 }
+      "M": { "shoulder": 46, "chest": 53, "sleeve": 61, "length": 68 },
+      "l": { "shoulder": 47, "chest": 54, "sleeve": 62, "length": 69 },
+      "XL": { "shoulder": 65, "chest": 55, "sleeve": 63, "length": 70 }
+
     },
     "detail_images": [
       { "path": "assets/sweater/sweater1.jpg", "type": "model", "alt": "new" },
@@ -258,7 +263,7 @@
     "fit_type": "accessories",
     "fabric": "goose",
     "measurements": {
-      "free": { "circumference": 58, "height": 12, "brim": 7 }
+      "free": { "shoulder": 56, "chest": 60, "sleeve": 66, "length": 74 }
     },
     "detail_images": [
       { "path": "assets/trench/trench1.jpg", "type": "model", "alt": "new" },
