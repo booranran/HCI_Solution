@@ -88,7 +88,7 @@ export function ProductDetailPage() {
         // 백엔드 API 호출 (product.id는 "suit001" 같은 문자열이어야 함)
         const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
         const response = await fetch(
-          `${baseUrl}/reviews/${product.id}`
+          `${baseUrl}/api/reviews/${product.id}`
         );
         const data = await response.json();
 
