@@ -23,15 +23,21 @@ export function FeaturedProducts({ onProductClick }: FeaturedProductsProps) {
         // 배포: Vercel API 주소
         // 개발: localhost 또는 IP 주소
         const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+        console.log("📍 API Base URL:", baseUrl);
+        console.log("📍 Full URL:", `${baseUrl}/clothes`);
         
         // ✅ /clothes 엔드포인트 호출
         const response = await fetch(`${baseUrl}/clothes`);
+        console.log("📍 Response Status:", response.status);
         
         if (!response.ok) {
+          const errorText = await response.text();
+          console.error("❌ API Error:", errorText);
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         
         const data = await response.json();
+        console.log("✅ Data received:", data);
 
         // ⭐️ 중요: 이미지 경로 수정 + 4개만 자르기 (Featured니까)
         const formattedProducts = data.items
@@ -45,7 +51,7 @@ export function FeaturedProducts({ onProductClick }: FeaturedProductsProps) {
 
         setProducts(formattedProducts);
       } catch (error) {
-        console.error("추천 상품 로딩 실패:", error);
+        console.error("❌ 추천 상품 로딩 실패:", error);
         toast.error("상품 로딩에 실패했습니다");
       } finally {
         setLoading(false);

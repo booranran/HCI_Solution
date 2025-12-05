@@ -58,14 +58,19 @@ CSV_PATH = Path(__file__).parent.parent / "data" / "review_results.csv"
 
 @app.get("/health")
 def health():
+    print("✅ /health 엔드포인트 호출됨")
     return {"ok": True}
 
 
 @app.get("/clothes")
 def list_clothes():
+    print("✅ /clothes 엔드포인트 호출됨")
     try:
+        print(f"📍 CLOTHES_PATH: {CLOTHES_PATH}")
         clothes = json.loads(CLOTHES_PATH.read_text(encoding="utf-8"))
+        print(f"✅ 옷 데이터 로드 성공: {len(clothes)}개 항목")
     except Exception as e:
+        print(f"❌ 옷 데이터 로드 실패: {e}")
         return JSONResponse(
             status_code=500, content={"error": f"Failed to read clothes.json: {e}"}
         )
