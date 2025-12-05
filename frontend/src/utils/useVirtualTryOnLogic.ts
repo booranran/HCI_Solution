@@ -86,8 +86,9 @@ export const useVirtualTryOnLogic = () => {
 
     try {
       // 4. Vertex AI VTO API 호출 (백엔드)
+      const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
       const response = await fetch(
-        `${import.meta.env.VITE_API_BASE_URL}/generate`,
+        `${baseUrl}/generate`,
         {
           method: "POST",
           body: formData,

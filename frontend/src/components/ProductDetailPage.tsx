@@ -86,8 +86,9 @@ export function ProductDetailPage() {
 
       try {
         // 백엔드 API 호출 (product.id는 "suit001" 같은 문자열이어야 함)
+        const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
         const response = await fetch(
-          `http://localhost:8000/reviews/${product.id}`
+          `${baseUrl}/reviews/${product.id}`
         );
         const data = await response.json();
 
@@ -265,10 +266,11 @@ export function ProductDetailPage() {
 
   // ✅ [추가] 백엔드 데이터(JSON)를 사용해서 이미지 목록 만들기
   // (만약 JSON에 detail_images가 없으면, 그냥 메인 이미지를 1개 보여주는 '안전 장치' 포함)
+  const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
   const productImages =
     product.detail_images && product.detail_images.length > 0
       ? product.detail_images.map((img: any) => ({
-          url: `${import.meta.env.VITE_API_BASE_URL}/static/${img.path}`, // ✅
+          url: `${baseUrl}/static/${img.path}`, // ✅ baseUrl 사용
           type: img.type,
           alt: img.alt,
         }))
@@ -276,7 +278,7 @@ export function ProductDetailPage() {
           // 데이터가 없을 때 보여줄 기본값 (메인 이미지)
           {
             url:
-              product.image || `${import.meta.env.VITE_API_BASE_URL}/static/placeholder.jpg`, // ✅
+              product.image || `${baseUrl}/static/placeholder.jpg`, // ✅ baseUrl 사용
             type: "product",
             alt: "상품 이미지",
           },

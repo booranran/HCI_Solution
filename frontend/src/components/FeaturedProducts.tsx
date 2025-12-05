@@ -19,6 +19,9 @@ export function FeaturedProducts({ onProductClick }: FeaturedProductsProps) {
   useEffect(() => {
     const fetchFeaturedProducts = async () => {
       try {
+        // ✅ 환경에 따라 다른 주소 사용
+        // 배포: Vercel API 주소
+        // 개발: localhost 또는 IP 주소
         const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
         
         // ✅ /clothes 엔드포인트 호출
@@ -36,7 +39,7 @@ export function FeaturedProducts({ onProductClick }: FeaturedProductsProps) {
           .map((item: any) => ({
             ...item,
             // 백엔드 이미지 경로를 URL로 변환
-            // 환경 변수 VITE_API_BASE_URL (예: http://192.168.0.100:8000)를 사용
+            // 환경 변수 VITE_API_BASE_URL 사용
             image: `${baseUrl}/static/${item.image_path}`, // ✅
           }));
 

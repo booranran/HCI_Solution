@@ -36,16 +36,17 @@ export function ProductListPage() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
+        const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
         const response = await fetch(
-          `${import.meta.env.VITE_API_BASE_URL}/clothes`
+          `${baseUrl}/clothes`
         );
         const data = await response.json();
 
         const formattedProducts = data.items.map((item: any) => ({
           ...item,
-          image: `${import.meta.env.VITE_API_BASE_URL}/static/${
+          image: `${baseUrl}/static/${
             item.image_path
-          }`, // ✅ 이렇게 수정!
+          }`, // ✅ baseUrl 사용
         }));
 
         setProducts(formattedProducts);
