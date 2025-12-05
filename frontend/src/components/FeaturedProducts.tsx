@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react';
-import { ImageWithFallback } from './figma/ImageWithFallback';
-import { Heart, ShoppingCart, Sparkles, Star } from 'lucide-react';
-import { useCart } from './CartContext';
-import { toast } from 'sonner';
+import { useState, useEffect } from "react";
+import { ImageWithFallback } from "./figma/ImageWithFallback";
+import { Heart, ShoppingCart, Sparkles, Star } from "lucide-react";
+import { useCart } from "./CartContext";
+import { toast } from "sonner";
 
 interface FeaturedProductsProps {
   onProductClick?: (product: any) => void;
@@ -19,21 +19,31 @@ export function FeaturedProducts({ onProductClick }: FeaturedProductsProps) {
   useEffect(() => {
     const fetchFeaturedProducts = async () => {
       try {
-        const response = await fetch('http://localhost:8000/clothes');
-        const data = await response.json();
+        const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
         
+        // ✅ /clothes 엔드포인트 호출
+        const response = await fetch(`${baseUrl}/clothes`);
+        
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+
         // ⭐️ 중요: 이미지 경로 수정 + 4개만 자르기 (Featured니까)
         const formattedProducts = data.items
           .slice(0, 4) // 상위 4개만 보여줌
           .map((item: any) => ({
             ...item,
             // 백엔드 이미지 경로를 URL로 변환
-            image: `http://localhost:8000/static/${item.image_path}`,
+            // 환경 변수 VITE_API_BASE_URL (예: http://192.168.0.100:8000)를 사용
+            image: `${baseUrl}/static/${item.image_path}`, // ✅
           }));
 
         setProducts(formattedProducts);
       } catch (error) {
         console.error("추천 상품 로딩 실패:", error);
+        toast.error("상품 로딩에 실패했습니다");
       } finally {
         setLoading(false);
       }
@@ -62,7 +72,9 @@ export function FeaturedProducts({ onProductClick }: FeaturedProductsProps) {
         <div className="text-center mb-16">
           <p className="text-accent uppercase tracking-wider mb-2">신상품</p>
           <h2 className="text-4xl text-primary mb-3">엄선된 컬렉션</h2>
-          <p className="text-gray-600">AI가 당신의 체형에 완벽하게 맞는 스타일을 제안합니다</p>
+          <p className="text-gray-600">
+            AI가 당신의 체형에 완벽하게 맞는 스타일을 제안합니다
+          </p>
         </div>
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
@@ -79,13 +91,17 @@ export function FeaturedProducts({ onProductClick }: FeaturedProductsProps) {
                   alt={product.name}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
                 />
-                
+
                 {/* Badge */}
-                <div className={`absolute top-4 left-4 px-3 py-1.5 rounded-full text-xs tracking-wider ${
-                  product.badge === 'AI Pick' ? 'bg-accent text-white' :
-                  product.badge === 'SALE' ? 'bg-red-500 text-white' :
-                  'bg-primary text-white'
-                }`}>
+                <div
+                  className={`absolute top-4 left-4 px-3 py-1.5 rounded-full text-xs tracking-wider ${
+                    product.badge === "AI Pick"
+                      ? "bg-accent text-white"
+                      : product.badge === "SALE"
+                      ? "bg-red-500 text-white"
+                      : "bg-primary text-white"
+                  }`}
+                >
                   {product.badge}
                 </div>
 
@@ -94,7 +110,9 @@ export function FeaturedProducts({ onProductClick }: FeaturedProductsProps) {
                 {product.aiMatch >= 90 && (
                   <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-full text-xs flex items-center gap-1.5 shadow-sm">
                     <Sparkles className="w-3.5 h-3.5 text-accent" />
-                    <span className="text-primary tracking-wide">{product.aiMatch}%</span>
+                    <span className="text-primary tracking-wide">
+                      {product.aiMatch}%
+                    </span>
                   </div>
                 )}
 
@@ -108,28 +126,41 @@ export function FeaturedProducts({ onProductClick }: FeaturedProductsProps) {
 
               {/* Product Info */}
               <div className="p-6">
-                <p className="text-xs text-gray-500 mb-1 uppercase tracking-wider">{product.brand}</p>
-                <h3 className="text-base text-primary mb-3 line-clamp-1">{product.name}</h3>
-                
+                <p className="text-xs text-gray-500 mb-1 uppercase tracking-wider">
+                  {product.brand}
+                </p>
+                <h3 className="text-base text-primary mb-3 line-clamp-1">
+                  {product.name}
+                </h3>
+
                 {/* Rating */}
                 <div className="flex items-center gap-2 mb-4">
                   <div className="flex items-center gap-1">
                     <Star className="w-3.5 h-3.5 fill-accent text-accent" />
-                    <span className="text-sm text-primary">{product.rating}</span>
+                    <span className="text-sm text-primary">
+                      {product.rating}
+                    </span>
                   </div>
-                  <span className="text-xs text-gray-400">({product.reviews})</span>
+                  <span className="text-xs text-gray-400">
+                    ({product.reviews})
+                  </span>
                 </div>
 
                 {/* Price */}
                 <div className="flex items-center gap-2 mb-5">
-                  <span className="text-xl text-primary">{Number(product.price).toLocaleString()}원</span>
+                  <span className="text-xl text-primary">
+                    {Number(product.price).toLocaleString()}원
+                  </span>
                   {product.originalPrice && (
                     <>
                       <span className="text-sm text-gray-400 line-through">
                         {Number(product.originalPrice).toLocaleString()}원
                       </span>
                       <span className="text-xs text-red-500 ml-auto">
-                        {Math.round((1 - product.price / product.originalPrice) * 100)}% OFF
+                        {Math.round(
+                          (1 - product.price / product.originalPrice) * 100
+                        )}
+                        % OFF
                       </span>
                     </>
                   )}

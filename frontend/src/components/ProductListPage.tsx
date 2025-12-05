@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react'; // ⭐️ useEffect 추가
-import { ArrowLeft, SlidersHorizontal, Star, Sparkles } from 'lucide-react';
-import { ImageWithFallback } from './figma/ImageWithFallback';
+import { useState, useEffect } from "react"; // ⭐️ useEffect 추가
+import { ArrowLeft, SlidersHorizontal, Star, Sparkles } from "lucide-react";
+import { ImageWithFallback } from "./figma/ImageWithFallback";
 import { useLocation, useNavigate } from "react-router-dom";
 
 interface Product {
@@ -22,26 +22,30 @@ export function ProductListPage() {
   const navigate = useNavigate();
 
   // 1. 카테고리 (문자열)
-  const category = location.state?.category || '전체';
+  const category = location.state?.category || "전체";
 
   // 2. 상품 데이터 (배열)
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
   // ⭐️ 3. [여기가 문제였음] 정렬 & 필터 상태는 무조건 '문자열'이어야 함!
-  const [sortBy, setSortBy] = useState<string>('ai-match'); // ⭐️ <string> 명시
-  const [priceRange, setPriceRange] = useState<string>('all'); // ⭐️ <string> 명시
+  const [sortBy, setSortBy] = useState<string>("ai-match"); // ⭐️ <string> 명시
+  const [priceRange, setPriceRange] = useState<string>("all"); // ⭐️ <string> 명시
 
   // 4. 백엔드 데이터 가져오기
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch('http://localhost:8000/clothes');
+        const response = await fetch(
+          `${import.meta.env.VITE_API_BASE_URL}/clothes`
+        );
         const data = await response.json();
-        
+
         const formattedProducts = data.items.map((item: any) => ({
           ...item,
-          image: `http://localhost:8000/static/${item.image_path}`,
+          image: `${import.meta.env.VITE_API_BASE_URL}/static/${
+            item.image_path
+          }`, // ✅ 이렇게 수정!
         }));
 
         setProducts(formattedProducts);
@@ -58,32 +62,35 @@ export function ProductListPage() {
   const allProducts = products;
 
   // 6. 카테고리 필터링
-  const filteredProducts = category === '전체'
-    ? allProducts
-    : category === '이미지 검색 결과'
-    ? allProducts.slice(0, 8)
-    : allProducts.filter(p => p.category === category);
+  const filteredProducts =
+    category === "전체"
+      ? allProducts
+      : category === "이미지 검색 결과"
+      ? allProducts.slice(0, 8)
+      : allProducts.filter((p) => p.category === category);
 
   // 7. 정렬 로직 (이제 sortBy가 string이라서 에러 안 남!)
   let sortedProducts = [...filteredProducts];
-  if (sortBy === 'ai-match') {
+  if (sortBy === "ai-match") {
     sortedProducts.sort((a, b) => b.aiMatch - a.aiMatch);
-  } else if (sortBy === 'price-low') {
+  } else if (sortBy === "price-low") {
     sortedProducts.sort((a, b) => a.price - b.price);
-  } else if (sortBy === 'price-high') {
+  } else if (sortBy === "price-high") {
     sortedProducts.sort((a, b) => b.price - a.price);
-  } else if (sortBy === 'rating') {
+  } else if (sortBy === "rating") {
     sortedProducts.sort((a, b) => b.rating - a.rating);
   }
 
   // 8. 가격 필터 로직 (priceRange도 string이라 에러 안 남!)
-  if (priceRange !== 'all') {
-    if (priceRange === 'under-100') {
-      sortedProducts = sortedProducts.filter(p => p.price < 100000);
-    } else if (priceRange === '100-200') {
-      sortedProducts = sortedProducts.filter(p => p.price >= 100000 && p.price < 200000);
-    } else if (priceRange === 'over-200') {
-      sortedProducts = sortedProducts.filter(p => p.price >= 200000);
+  if (priceRange !== "all") {
+    if (priceRange === "under-100") {
+      sortedProducts = sortedProducts.filter((p) => p.price < 100000);
+    } else if (priceRange === "100-200") {
+      sortedProducts = sortedProducts.filter(
+        (p) => p.price >= 100000 && p.price < 200000
+      );
+    } else if (priceRange === "over-200") {
+      sortedProducts = sortedProducts.filter((p) => p.price >= 200000);
     }
   }
 
@@ -92,16 +99,19 @@ export function ProductListPage() {
   };
 
   const handleProductClick = (product: Product) => {
-    navigate('/product-detail', { state: { product } });
+    navigate("/product-detail", { state: { product } });
   };
 
   const handleBackToHome = () => {
-    navigate('/'); 
+    navigate("/");
   };
 
-  
-
-  if (loading) return <div className="min-h-screen flex items-center justify-center">로딩 중...</div>;
+  if (loading)
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        로딩 중...
+      </div>
+    );
 
   return (
     <div className="min-h-screen bg-white">
@@ -121,12 +131,11 @@ export function ProductListPage() {
         <div className="mb-12">
           <h1 className="text-4xl text-primary mb-4">{category}</h1>
           <p className="text-gray-600">
-            {category === '이미지 검색 결과' 
+            {category === "이미지 검색 결과"
               ? `업로드하신 이미지와 비슷한 ${sortedProducts.length}개의 상품을 찾았습니다`
-              : `AI가 분석한 ${sortedProducts.length}개의 상품을 만나보세요`
-            }
+              : `AI가 분석한 ${sortedProducts.length}개의 상품을 만나보세요`}
           </p>
-           {category === '이미지 검색 결과' && (
+          {category === "이미지 검색 결과" && (
             <div className="mt-4 p-4 bg-accent/10 rounded-2xl flex items-start gap-3">
               <Sparkles className="w-5 h-5 text-accent flex-shrink-0 mt-0.5" />
               <div>
@@ -181,20 +190,22 @@ export function ProductListPage() {
                 />
                 <div
                   className={`absolute top-4 left-4 px-3 py-1.5 rounded-full text-xs tracking-wider ${
-                    product.badge === 'AI Pick'
-                      ? 'bg-accent text-white'
-                      : product.badge === 'SALE'
-                      ? 'bg-red-500 text-white'
-                      : product.badge === 'HOT'
-                      ? 'bg-orange-500 text-white'
-                      : 'bg-primary text-white'
+                    product.badge === "AI Pick"
+                      ? "bg-accent text-white"
+                      : product.badge === "SALE"
+                      ? "bg-red-500 text-white"
+                      : product.badge === "HOT"
+                      ? "bg-orange-500 text-white"
+                      : "bg-primary text-white"
                   }`}
                 >
                   {product.badge}
                 </div>
                 <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-sm px-3 py-1.5 rounded-full flex items-center gap-1.5">
                   <Sparkles className="w-3.5 h-3.5 text-accent" />
-                  <span className="text-xs text-primary">{product.aiMatch}%</span>
+                  <span className="text-xs text-primary">
+                    {product.aiMatch}%
+                  </span>
                 </div>
               </div>
 
@@ -212,23 +223,30 @@ export function ProductListPage() {
                         key={i}
                         className={`w-3.5 h-3.5 ${
                           i < Math.floor(product.rating)
-                            ? 'fill-accent text-accent'
-                            : 'text-gray-300'
+                            ? "fill-accent text-accent"
+                            : "text-gray-300"
                         }`}
                       />
                     ))}
                   </div>
-                  <span className="text-xs text-gray-500">({product.reviews})</span>
+                  <span className="text-xs text-gray-500">
+                    ({product.reviews})
+                  </span>
                 </div>
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-lg text-gray-900">{product.price.toLocaleString()}원</span>
+                  <span className="text-lg text-gray-900">
+                    {product.price.toLocaleString()}원
+                  </span>
                   {product.originalPrice && (
                     <>
                       <span className="text-sm text-gray-400 line-through">
                         {product.originalPrice.toLocaleString()}원
                       </span>
                       <span className="text-xs text-red-500 ml-auto">
-                        {Math.round((1 - product.price / product.originalPrice) * 100)}% OFF
+                        {Math.round(
+                          (1 - product.price / product.originalPrice) * 100
+                        )}
+                        % OFF
                       </span>
                     </>
                   )}

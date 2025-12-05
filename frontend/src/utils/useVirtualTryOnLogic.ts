@@ -35,7 +35,7 @@ export const useVirtualTryOnLogic = () => {
       reader.readAsDataURL(file);
     }
   };
-  
+
   // ... (handleFileChange, handleDragOver, handleDrop 함수들은 그대로 유지) ...
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -62,10 +62,8 @@ export const useVirtualTryOnLogic = () => {
       handleFileSelect(file);
     }
   };
-  
 
   const handleTryOn = async (imageData?: string) => {
-
     const finalUserImage = imageData || userImage;
 
     // 1. 필수 데이터 확인
@@ -82,17 +80,19 @@ export const useVirtualTryOnLogic = () => {
     // 3. FormData 생성 (백엔드 /generate 엔드포인트에 맞춰서)
     const formData = new FormData();
     formData.append("file", file);
-    formData.append("cloth_id", product.id.toString()); 
+    formData.append("cloth_id", product.id.toString());
 
     setProcessing(true); // 로딩 시작
 
     try {
       // 4. Vertex AI VTO API 호출 (백엔드)
-      const response = await fetch("http://localhost:8000/generate", {
-        method: "POST",
-        body: formData,
-      });
-
+      const response = await fetch(
+        `${import.meta.env.VITE_API_BASE_URL}/generate`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
       if (!response.ok) {
         throw new Error("AI 가상 피팅 서버에서 오류 발생");
       }
@@ -100,7 +100,6 @@ export const useVirtualTryOnLogic = () => {
       const data = await response.json();
       console.log("🔥 백엔드 응답 데이터:", data);
       console.log("🚀 결과 이미지 URL:", data.result_image);
-
 
       // 5. 결과 확인 및 페이지 이동
       const resultImageUrl = data.result_image;
@@ -112,7 +111,7 @@ export const useVirtualTryOnLogic = () => {
       console.log("📦 결과 페이지로 보낼 택배 확인:", {
         product: product,
         userImage: finalUserImage, // (여기가 null인지 확인!)
-        resultImage: resultImageUrl
+        resultImage: resultImageUrl,
       });
 
       setProcessing(false); // 로딩 종료
@@ -134,11 +133,10 @@ export const useVirtualTryOnLogic = () => {
         error instanceof Error ? error.message : "알 수 없는 오류 발생";
       toast.error(`가상 피팅 중 오류가 발생했습니다: ${errorMessage}`);
     }
-
   }; // <--- handleTryOn 함수는 여기서 종료
 
   // ⭐️⭐️ 최종 반환은 여기서 딱 한 번! ⭐️⭐️
-  return{
+  return {
     product,
     userImage,
     resultImage,

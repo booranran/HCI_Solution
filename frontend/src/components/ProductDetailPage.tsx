@@ -268,7 +268,7 @@ export function ProductDetailPage() {
   const productImages =
     product.detail_images && product.detail_images.length > 0
       ? product.detail_images.map((img: any) => ({
-          url: `http://localhost:8000/static/${img.path}`, // ⭐️ 백엔드 주소 조립
+          url: `${import.meta.env.VITE_API_BASE_URL}/static/${img.path}`, // ✅
           type: img.type,
           alt: img.alt,
         }))
@@ -276,7 +276,7 @@ export function ProductDetailPage() {
           // 데이터가 없을 때 보여줄 기본값 (메인 이미지)
           {
             url:
-              product.image || "http://localhost:8000/static/placeholder.jpg",
+              product.image || `${import.meta.env.VITE_API_BASE_URL}/static/placeholder.jpg`, // ✅
             type: "product",
             alt: "상품 이미지",
           },
