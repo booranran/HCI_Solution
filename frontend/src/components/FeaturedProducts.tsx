@@ -24,8 +24,8 @@ export function FeaturedProducts({ onProductClick }: FeaturedProductsProps) {
         // 개발: localhost 또는 IP 주소
         const baseUrl = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
         
-        // ✅ /api/clothes 엔드포인트 호출
-        const response = await fetch(`${baseUrl}/api/clothes`);
+        // ✅ /clothes 엔드포인트 호출
+        const response = await fetch(`${baseUrl}/clothes`);
         
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
