@@ -9,14 +9,14 @@
       }
     },
     {
-      "src": "backend/main.py",
-      "use": "@vercel/python"
+      "src": "Dockerfile",
+      "use": "@vercel/docker"
     }
   ],
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "backend/main.py?/$1"
+      "dest": "/$1"
     },
     {
       "src": "/(.*\\.(?:js|css|ico|svg|png|jpg|gif|json|xml|html))",
